@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "348197268829",
-    "project_id": "house-rental-87db0",
-    "storage_bucket": "house-rental-87db0.appspot.com"
+    "project_number": "5833391718",
+    "project_id": "house-rental-393e0",
+    "storage_bucket": "house-rental-393e0.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:348197268829:android:e3542a03a2485fb6dd4cb4",
+        "mobilesdk_app_id": "1:5833391718:android:e801716d65b5ce821337a7",
         "android_client_info": {
-          "package_name": "com.example.house_rental"
+          "package_name": "com.firebasedatabase.house_rental"
         }
       },
       "oauth_client": [
         {
-          "client_id": "348197268829-k9hpjdtakogjs9gmof3thgenu1ii2de3.apps.googleusercontent.com",
+          "client_id": "5833391718-mic8n4hdpk7i7m4ckj25b24p0kp4svnb.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAmOejiEOr--L7UrmzQCxpGDgw2V37mPnM"
+          "current_key": "AIzaSyD2PnEd4ET06mtTqTtOrmlWDom42K8FaMw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "348197268829-k9hpjdtakogjs9gmof3thgenu1ii2de3.apps.googleusercontent.com",
+              "client_id": "5833391718-mic8n4hdpk7i7m4ckj25b24p0kp4svnb.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
