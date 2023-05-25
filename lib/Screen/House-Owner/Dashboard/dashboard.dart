@@ -250,7 +250,7 @@ class _dashboardState extends State<dashboard> {
                                       color: BackgroundColor),
                                   child: Center(
                                       child: Icon(
-                                    Icons.payments_outlined,
+                                    Icons.newspaper,
                                     size: 70,
                                     color: Colors.black87,
                                   )),
@@ -261,7 +261,7 @@ class _dashboardState extends State<dashboard> {
                               height: 5,
                             ),
                             Text(
-                              "Payments",
+                              "Contracts",
                               style: TextStyle(
                                 color: Colors.black,
                               ),

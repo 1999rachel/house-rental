@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:house_rental/Screen/House-Owner/Dashboard/dashboard.dart';
 import 'package:house_rental/Utils/PreferenceUtil.dart';
 
@@ -17,13 +18,20 @@ class LogIn extends StatefulWidget {
 }
 
 class _LogInState extends State<LogIn> {
-  bool _isLoading = false;
+
+
+
+  bool isLoading = false;
 
   final ButtonColor = const Color(0xff0748A6);
   final BackgroundColor = const Color(0xffEEEEEE);
   final _formKey = GlobalKey<FormState>();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+
   TextEditingController emailcontroller = TextEditingController();
   TextEditingController passwordcontroller = TextEditingController();
+
 
   @override
   void dispose() {
@@ -34,18 +42,83 @@ class _LogInState extends State<LogIn> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    PreferenceUtil pref = PreferenceUtil();
-    pref.getItem("email", 'string').then((user_email) => {
-      if (user_email != null) {
-        Navigator.of(context).push(
-        MaterialPageRoute(
-            builder: (context) => const dashboard()))
-      }
-    });
+
+      FirebaseAuth.instance
+          .authStateChanges()
+          .listen((User? user) {
+        if (user == null) {
+          print('User is currently signed out!');
+        } else {
+          LogIn();
+        }
+      });
+
+
     super.initState();
   }
-
+  showSnackBar(String text, Duration d) {
+    final snackBar = SnackBar(
+      content: Text(text),
+      duration: d,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+  // Future<void> SignInUser(String email, String password) async {
+  //   try{
+  //     await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailcontroller.text, password: passwordcontroller.text).then((value) {
+  //
+  //       Navigator.of(context).push(
+  //
+  //           MaterialPageRoute(
+  //               builder: (context) =>
+  //               const dashboard()));
+  //
+  //     });
+  //
+  //   } catch (user_credentials) {
+  //     if (user_credentials is FirebaseException){
+  //       if (user_credentials.code== 'invalid-email' ||
+  //           user_credentials.code == 'user-not-found' ||
+  //           user_credentials.code == 'wrong-password'{
+  //       showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //       return AlertDialog(
+  //       title: Text('Error'),
+  //       content: Text('Invalid email or password.'),
+  //       actions: <Widget>[
+  //       TextButton(
+  //       child: Text('OK'),
+  //       onPressed: () {
+  //       Navigator.of(context).pop();
+  //       },
+  //       ),
+  //       ],
+  //       );
+  //       },
+  //       );
+  //       }
+  //       else {
+  //       // Show a generic error AlertDialog
+  //       showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //       return AlertDialog(
+  //       title: Text('Error'),
+  //       content: Text('An error occurred.'),
+  //       actions: <Widget>[
+  //       TextButton(
+  //       child: Text('OK'),
+  //       onPressed: () {
+  //       Navigator.of(context).pop();
+  //       },
+  //       ),
+  //       ],
+  //       );
+  //       },
+  //       );
+  //
+  //       }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,17 +208,12 @@ class _LogInState extends State<LogIn> {
                       Container(
                         child: TextFormField(
                           validator: (value) {
-
-                            if(value!.isEmpty){
-
+                            if (value!.isEmpty) {
                               return 'Please enter your password';
-                            }else if (value!.length<8){
-
+                            } else if (value!.length < 8) {
                               return 'Enter Password with not less than 8 chars long';
-                            }
-
-                            },
-
+                            }return null;
+                          },
                           obscureText: true,
                           controller: passwordcontroller,
                           cursorColor: Colors.black,
@@ -181,51 +249,191 @@ class _LogInState extends State<LogIn> {
                               )),
                         ),
                       ),
-                      SizedBox(height: 20),
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) =>
-                                  phone_number_verification()));
-                        },
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            "Forgot Password ?",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
-                          ),
+                      SizedBox(
+                        height: 5,
+                      ),
+
+                      Container(
+                        height: 45,
+                        child: TextButton(
+                          onPressed: (){
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    phone_number_verification()));
+                          },
+                          child: Align(
+                              alignment: Alignment.topRight,
+                              child: Text(
+                                "Forgot Password ?",
+                                style: TextStyle(
+                                    color: Color(0xffC30000),
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
                         ),
                       ),
-                      SizedBox(
-                        height: 25,
-                      ),
+
                       Container(
                         width: double.infinity,
-
                         decoration: BoxDecoration(
                             color: Color(0xff0748A6),
                             borderRadius: BorderRadius.circular(10)),
                         child: TextButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                DocumentSnapshot<Map<String, dynamic>> user =
-                                    await FirebaseFirestore.instance
-                                        .collection("house_owners")
-                                        .doc(emailcontroller.text)
-                                        .get();
-                                if (user.exists) {
-                                  if (passwordcontroller.text ==
-                                      user.get("password")) {
-                                    PreferenceUtil prefs = PreferenceUtil();
-                                    prefs.setItem("email", emailcontroller.text, "string");
+
+                                setState(() {
+                                  isLoading = true;
+
+                                });
+
+
+                                try{
+                                  await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailcontroller.text, password: passwordcontroller.text).then((value) {
+
                                     Navigator.of(context).push(
+
                                         MaterialPageRoute(
-                                            builder: (context) => const dashboard()));
-                                  }
+                                            builder: (context) =>
+                                            const dashboard()));
+
+                                  });
+
                                 }
-                              }
+                                catch ( user_credential){
+                                  if (user_credential is FirebaseException && (user_credential.code == 'invalid- email'||
+                                        user_credential.code == 'user-not-found'||
+                                    user_credential.code== ' wrong-password')) {
+                                    showDialog(context: context, builder: (context){
+                                      return AlertDialog(
+                                        content: Center(
+                                          child: Text("Invalid Email of Password"),
+                                        ),
+                                      );
+
+                                    });
+
+                                  }
+                                  else{
+                                    // setState(() {
+                                    //
+                                    //    isLoading = false;
+                                    //
+                                    // });
+                                    showDialog(context: context, builder: (context){
+                                      return
+                                       Container(
+                                         height: 100,
+                                         child: AlertDialog(
+                                            content: Container(
+                                              height: 100,
+                                              child: Center(
+                                                child: Text("Invalid Email of Password",),
+                                              ),
+                                            ),
+                                            actions: <Widget>[
+                                              Center(child: Container(
+                                                  height:45,
+                                                  width: 100,
+                                                  decoration: BoxDecoration(
+                                                    color: ButtonColor,
+                                                    borderRadius: BorderRadius.all(Radius.circular(10))
+
+                                                  ),
+                                                  child: Center(child: TextButton(
+                                                    onPressed: (){
+                                              setState(() {
+                                                isLoading = false;
+                                              });
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                    child: Text('OK',style: TextStyle(
+                                                      color: Colors.white,
+                                                    ),),
+                                                  )))),
+
+                                              SizedBox(
+                                                height: 20,
+                                              )
+                                            ],
+
+                                      ),
+                                       );
+
+                                    });
+
+
+
+                                  }
+
+                            }
+    // catch (user_credentials) {
+    // if (user_credentials is FirebaseException){
+    // if (user_credentials.code== 'invalid-email' ||
+    // user_credentials.code == 'user-not-found' ||
+    // user_credentials.code == 'wrong-password'{
+    // showDialog(
+    // context: context,
+    // builder: (BuildContext context) {
+    // return AlertDialog(
+    // title: Text('Error'),
+    // content: Text('Invalid email or password.'),
+    // actions: <Widget>[
+    // TextButton(
+    // child: Text('OK'),
+    // onPressed: () {
+    // Navigator.of(context).pop();
+    // },
+    // ),
+    // ],
+    // );
+    // },
+    //
+                                // try{
+                                //   FirebaseAuth.instance
+                                //       .signInWithEmailAndPassword(
+                                //       email: emailcontroller.text,
+                                //       password: passwordcontroller.text
+                                //
+                                //   )
+                                //       .then((value) => Navigator.of(context).push(
+                                //
+                                //       MaterialPageRoute(
+                                //           builder: (context) =>
+                                //           const dashboard())));
+                                //
+                                //
+                                // }
+                                //    on FirebaseAuthException  catch(e){
+                                //      setState(() {
+                                //        isLoading = false;
+                                //        emailcontroller.clear();
+                                //        passwordcontroller.clear();
+                                //      });
+                                //      if (e.code == 'user-not-found') {
+                                //        showDialog(context: context, builder: (context){
+                                //          return AlertDialog(
+                                //            title: Center(
+                                //              child:Text("Invalid Email")
+                                //            ),
+                                //
+                                //          );
+                                //        });
+                                //        // print('No user found for that email.');
+                                //      } else if (e.code == 'wrong-password') {
+                                //        // print('Wrong password provided for that user.');/
+                                //        showDialog(context: context, builder: (context){
+                                //          return AlertDialog(
+                                //            title: Center(child: Text("Invalid Password")),
+                                //
+                                //          );
+                                //        });
+                                //      }
+                                //
+                                //
+                                //     }
+                                                 }
+
                             },
                             child: (Text(
                               "Sign In",
@@ -233,8 +441,9 @@ class _LogInState extends State<LogIn> {
                                   TextStyle(color: Colors.white, fontSize: 17),
                             ))),
                       ),
+
                       SizedBox(
-                        height: 150,
+                        height: 30,
                       ),
                       Align(
                         alignment: Alignment.bottomCenter,
@@ -244,29 +453,38 @@ class _LogInState extends State<LogIn> {
                           children: [
                             Text(
                               "Don't have an account ?",
-                              style: TextStyle(
-                                  color: Colors.black, fontSize: 15),
+                              style:
+                              TextStyle(color: Colors.black, fontSize: 15),
                             ),
                             SizedBox(
                               width: 3,
                             ),
                             InkWell(
                                 onTap: () {
-                                  Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (context) => SignUp()));
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => SignUp()));
                                 },
                                 child: Text(
                                   "Sign Up",
                                   style: TextStyle(
                                       color: Color(0xffC30000),
                                       fontWeight: FontWeight.bold),
-                                ))
+                                )),
+
                           ],
                         ),
                       ),
+
                       SizedBox(
-                        height: 20,
+                        height: 50,
+                      ),
+                      isLoading ? Center(child: SpinKitCircle(color: ButtonColor)) : Container(),
+                      SizedBox(
+                        height: 150,
+                      ),
+
+                      SizedBox(
+                        height: 30,
                       )
                     ],
                   ),
@@ -276,6 +494,8 @@ class _LogInState extends State<LogIn> {
           )),
     )));
   }
+
+
 
   // Future SignIn() async {
   //

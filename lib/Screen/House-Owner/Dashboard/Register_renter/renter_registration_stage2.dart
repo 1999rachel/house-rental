@@ -25,26 +25,28 @@ class _renter_registration_stage2State
   bool _showContainer = false;
   late String _selectedId;
 
-  final Stream<QuerySnapshot> _house =
-      FirebaseFirestore.instance.collection("houses").snapshots();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // final Stream<QuerySnapshot> _house =
+  //     FirebaseFirestore.instance.collection("houses").snapshots();
   // late Stream<QuerySnapshot> _house;
 
   // get id of the selected house
-
-  @override
-  void initState() {
-    super.initState();
-    PreferenceUtil prefs = PreferenceUtil();
-
-    prefs.getItem("email", "string").then((email) {
-      setState(() {
-        final _house = FirebaseFirestore.instance
-            .collection("houses")
-            .where("house_owner_id", isEqualTo: email)
-            .snapshots();
-      });
-    });
-  }
+  //
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   PreferenceUtil prefs = PreferenceUtil();
+  //
+  //   prefs.getItem("email", "string").then((email) {
+  //     setState(() {
+  //       final _house = FirebaseFirestore.instance
+  //           .collection("houses")
+  //           .where("house_owner_id", isEqualTo: email)
+  //           .snapshots();
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -92,8 +94,12 @@ class _renter_registration_stage2State
                 height: 20,
               ),
 
-              StreamBuilder(
-                  stream: _house,
+              StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('houses_db')
+                      .where("house_owner_id",
+                          isEqualTo: _auth.currentUser?.uid)
+                      .snapshots(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (snapshot.hasError) {
                       return Text(snapshot.error.toString());
@@ -122,16 +128,17 @@ class _renter_registration_stage2State
                                     setState(() {
                                       try {
                                         FirebaseFirestore.instance
-                                            .collection("renters")
+                                            .collection("renters_db")
                                             .doc(widget.email)
-                                            .update({"house_id": data.id});
+                                             .update({"house_id": data.id});
+                                            // .update(
+                                            //     {"house_no": data['house_no']});
 
                                         Navigator.of(context).push(
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     renter_details()));
                                       } catch (e) {
-
                                         Text("Something went wrong");
                                       }
                                     });

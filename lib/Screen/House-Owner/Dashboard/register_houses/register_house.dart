@@ -25,16 +25,21 @@ class _register_houseState extends State<register_house> {
   String house_owner_email = "";
 
   final _formKey = GlobalKey<FormState>();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  bool isLoading = false;
 
   @override
   void initState() {
     // TODO: implement initState
-    PreferenceUtil pref = PreferenceUtil();
-    pref.getItem('email', 'string').then((email) {
-      setState(() {
-        house_owner_email = email;
-      });
-    });
+
+
+    // PreferenceUtil pref = PreferenceUtil();
+    // pref.getItem('email', 'string').then((email) {
+    //   setState(() {
+    //     house_owner_email = email;
+    //   });
+    // });
     super.initState();
   }
 
@@ -58,7 +63,7 @@ class _register_houseState extends State<register_house> {
         backgroundColor: ButtonColor,
         leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>registered_houses()));
             },
             icon: Icon(
               Icons.arrow_back_ios,
@@ -93,7 +98,7 @@ class _register_houseState extends State<register_house> {
                             color: Colors.black, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(
-                        width: 50,
+                        width: 35,
                       ),
                       Expanded(
                         child: Container(
@@ -479,8 +484,12 @@ class _register_houseState extends State<register_house> {
                     child: TextButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
+
+                          setState(() {
+                            isLoading = true;
+                          });
                           await FirebaseFirestore.instance
-                              .collection("houses").doc()
+                              .collection("houses_db").doc()
                               .set({
                                 "house_no": house_no_controller.text,
                                 "kitchen": kitchen_no_controller.text,
@@ -490,7 +499,7 @@ class _register_houseState extends State<register_house> {
                                 "master_bed_room":
                                     master_bedroom_no_controller.text,
                                 "rent": rent_controller.text,
-                                "house_owner_id": house_owner_email,
+                                "house_owner_id": _auth.currentUser?.uid,
                             // check if house number is available
                               })
                               .then((value) => {

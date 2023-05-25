@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -12,7 +13,6 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-
   final ListOfGender = ['Gender', 'Female', 'Male'];
   String _selectGender = 'Gender';
   TextEditingController email_controller = TextEditingController();
@@ -24,6 +24,7 @@ class _SignUpState extends State<SignUp> {
   TextEditingController confirm_controller = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -35,19 +36,20 @@ class _SignUpState extends State<SignUp> {
     gender_controller.dispose();
     full_name_controller.dispose();
     confirm_controller.dispose();
-
   }
 
   final BackgroundColor = Color(0xffEEEEEE);
 
   final ButtonColor = const Color(0xff0748A6);
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // isLoading ? Center(child: SpinKitCircle(color: ButtonColor)) : Container(),
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
           child: Form(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               key: _formKey,
               child: Container(
                   width: double.infinity,
@@ -55,7 +57,7 @@ class _SignUpState extends State<SignUp> {
                   color: BackgroundColor,
                   child: Column(
                     children: [
-                      Padding(padding: EdgeInsets.only(top: 30)),
+                      Padding(padding: EdgeInsets.only(top: 20)),
                       Container(
                         height: 150,
                         width: double.infinity,
@@ -64,7 +66,7 @@ class _SignUpState extends State<SignUp> {
                         ),
                       ),
                       SizedBox(
-                        height: 30,
+                        height: 20,
                       ),
                       Expanded(
                           child: Container(
@@ -79,7 +81,7 @@ class _SignUpState extends State<SignUp> {
                           child: Column(
                             children: [
                               Container(
-                                height: 40,
+                                height: 30,
                               ),
                               Container(
                                 // height: 45,
@@ -87,7 +89,6 @@ class _SignUpState extends State<SignUp> {
                                   inputFormatters: <TextInputFormatter>[
                                     UpperCaseTextFormat()
                                   ],
-
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return 'Please enter your full name';
@@ -136,7 +137,8 @@ class _SignUpState extends State<SignUp> {
                                 height: 15,
                               ),
                               DropdownButtonFormField(
-                                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
                                   isExpanded: true,
                                   icon: Icon(
                                     Icons.arrow_drop_down_circle,
@@ -145,37 +147,42 @@ class _SignUpState extends State<SignUp> {
                                   elevation: 0,
                                   dropdownColor: Colors.white,
                                   decoration: InputDecoration(
-                                    // prefixIcon: Icon(Icons.transgender),
+                                      // prefixIcon: Icon(Icons.transgender),
                                       filled: true,
                                       fillColor: Colors.white,
-                                      hintStyle: TextStyle(color: Colors.black54),
+                                      hintStyle:
+                                          TextStyle(color: Colors.black54),
                                       contentPadding: EdgeInsets.only(
-                                          left: 20, right: 20, top: 8, bottom: 8),
-                                      labelStyle: TextStyle(color: Colors.black54),
+                                          left: 20,
+                                          right: 20,
+                                          top: 8,
+                                          bottom: 8),
+                                      labelStyle:
+                                          TextStyle(color: Colors.black54),
                                       border: OutlineInputBorder(
-                                          borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10)),
                                           borderSide: BorderSide(
                                             width: 0.3,
                                             color: Colors.black54,
                                           )),
                                       focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10)),
                                           borderSide: BorderSide(
                                             width: 0.3,
                                             color: ButtonColor,
                                           )),
                                       disabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10)),
                                           borderSide: BorderSide(
                                             width: 0.3,
                                             color: Colors.black54,
                                           )),
                                       enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10)),
                                           borderSide: BorderSide(
                                             width: 0.3,
                                             color: Colors.black54,
@@ -472,38 +479,64 @@ class _SignUpState extends State<SignUp> {
                                 child: TextButton(
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
-                                        await FirebaseFirestore.instance
-                                            .collection("house_owners")
-                                            .doc(email_controller.text)
-                                            .set({
-                                              "email": email_controller.text,
-                                              "full_name":
-                                                  full_name_controller.text,
-                                              "gender": gender_controller.text,
-                                              "password":
-                                                  password_controller.text,
-                                              "primary_phone_number":
-                                                  primary_phone_number.text,
-                                              "secondary_phone_number":
-                                                  primary_phone_number.text,
-                                          "gender":_selectGender
-                                            })
-                                            .then((value) => {
-                                                  Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              LogIn()))
+                                        //
+                                        // await FirebaseFirestore.instance
+                                        //     .collection("house_"
+                                        //     "Owner")
+                                        //     .doc(email_controller.text)
+                                        //     .set({
+                                        //       "email": email_controller.text,
+                                        //       "full_name":
+                                        //           full_name_controller.text,
+                                        //       "gender": gender_controller.text,
+                                        //       "password":
+                                        //           password_controller.text,
+                                        //       "primary_phone_number":
+                                        //           primary_phone_number.text,
+                                        //       "secondary_phone_number":
+                                        //           primary_phone_number.text,
+                                        //   "gender":_selectGender
+                                        //     })
+                                        FirebaseAuth.instance
+                                            .createUserWithEmailAndPassword(
+                                                email: email_controller.text,
+                                                password:
+                                                    password_controller.text)
+                                            .then((value) async => {
+                                                  await FirebaseFirestore
+                                                      .instance
+                                                      .collection(
+                                                          "house_owner_db")
+                                                      .doc(_auth
+                                                          .currentUser?.uid)
+                                                      .set({
+                                                    "email":
+                                                        email_controller.text,
+                                                    "full_name":
+                                                        full_name_controller
+                                                            .text,
+                                                    "gender":
+                                                        gender_controller.text,
+                                                    "password":
+                                                        password_controller
+                                                            .text,
+                                                    "primary_phone_number":
+                                                        primary_phone_number
+                                                            .text,
+                                                    "secondary_phone_number":
+                                                        primary_phone_number
+                                                            .text,
+                                                    "gender": _selectGender
+                                                  }).then((value) => Navigator
+                                                              .of(context)
+                                                          .push(MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      LogIn())))
                                                 })
                                             .catchError((onError) =>
                                                 {"something went wrong"});
                                       }
-                                      // else {
-                                      //   Center(
-                                      //     child: const CircularProgressIndicator(
-                                      //       color: Color(0xff0748A6),
-                                      //     ),
-                                      //   );
-                                      // }
                                     },
                                     child: (Text(
                                       "Sign Up",
@@ -512,7 +545,7 @@ class _SignUpState extends State<SignUp> {
                                     ))),
                               ),
                               SizedBox(
-                                height: 50,
+                                height: 20,
                               ),
                               Align(
                                 alignment: Alignment.bottomCenter,

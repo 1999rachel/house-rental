@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:house_rental/Screen/House-Owner/Dashboard/dashboard.dart';
 import 'package:house_rental/Screen/House-Owner/Dashboard/register_houses/register_house.dart';
 
 import '../../../../Utils/PreferenceUtil.dart';
@@ -15,27 +18,25 @@ class registered_houses extends StatefulWidget {
 class _registered_housestate extends State<registered_houses> {
   final ButtonColor = const Color(0xff0748A6);
   final BackgroundColor = const Color(0xffEEEEEE);
-
-  final Stream<QuerySnapshot> _houses = FirebaseFirestore.instance
-      .collection("houses")
-      .orderBy("house_no", descending: false)
-      .snapshots();
-  late Stream<QuerySnapshot> _houseStream;
-
-  @override
-  void initState() {
-    super.initState();
-    PreferenceUtil prefs = PreferenceUtil();
-
-    prefs.getItem("email", "string").then((email) {
-      setState(() {
-        _houseStream = FirebaseFirestore.instance
-            .collection("houses")
-            .where("house_owner_id", isEqualTo: email)
-            .snapshots();
-      });
-    });
-  }
+  //
+  // late Stream<QuerySnapshot> _houses = FirebaseFirestore.instance
+  //     .collection("houses_db")
+  //     .snapshots();
+  // late final Stream<QuerySnapshot> _houseStream;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  //
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   FirebaseAuth _auth = FirebaseAuth.instance;
+  //     setState(() {
+  //       _houses = FirebaseFirestore.instance
+  //           .collection("house_db")
+  //           .where("house_owner_id", isEqualTo: _auth.currentUser?.uid)
+  //           .snapshots();
+  //     });
+  //
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,7 @@ class _registered_housestate extends State<registered_houses> {
         elevation: 0,
         leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>dashboard()));
             },
             icon: Icon(
               Icons.arrow_back_ios,
@@ -81,14 +82,18 @@ class _registered_housestate extends State<registered_houses> {
               ),
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: _houseStream,
+                  stream: FirebaseFirestore.instance
+                      .collection("houses_db").
+                    where('house_owner_id', isEqualTo: _auth.currentUser!.uid)
+                      .snapshots(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (snapshot.hasError) {
                       return Text(snapshot.error.toString());
                     } else if (snapshot.connectionState ==
                         ConnectionState.waiting) {
                       return Center(
-                        child: CircularProgressIndicator(
+                        child: SpinKitCircle(
+                          size: 50,
                           color: ButtonColor,
                         ),
                       );
@@ -217,20 +222,22 @@ class _registered_housestate extends State<registered_houses> {
                                           ),
                                         ],
                                       ),
-                                      Expanded(
-                                        child: Align(
+                                      Expanded(child: Container()),
+                                      Row(
+                                        children: [
+                                          Align(
                                           alignment: Alignment.bottomRight,
                                           child: TextButton(
                                               onPressed: () {
                                                 showModalBottomSheet<void>(
                                                   shape: RoundedRectangleBorder(
                                                       borderRadius:
-                                                          BorderRadius.only(
-                                                              topLeft: Radius
-                                                                  .circular(10),
-                                                              topRight: Radius
-                                                                  .circular(
-                                                                      10))),
+                                                      BorderRadius.only(
+                                                          topLeft: Radius
+                                                              .circular(10),
+                                                          topRight: Radius
+                                                              .circular(
+                                                              10))),
                                                   useSafeArea: true,
                                                   isDismissible: true,
                                                   elevation: 1,
@@ -242,7 +249,7 @@ class _registered_housestate extends State<registered_houses> {
                                                           left: 20, right: 20),
                                                       child: Center(
                                                         child:
-                                                            SingleChildScrollView(
+                                                        SingleChildScrollView(
                                                           child: Column(
                                                             children: [
                                                               SizedBox(
@@ -250,11 +257,11 @@ class _registered_housestate extends State<registered_houses> {
                                                               ),
                                                               Container(
                                                                 decoration: BoxDecoration(
-                                                                  color: ButtonColor,
-                                                                  borderRadius: BorderRadius.only(
-                                                                    bottomRight: Radius.circular(20),
-                                                                    bottomLeft: Radius.circular(20)
-                                                                  )
+                                                                    color: ButtonColor,
+                                                                    borderRadius: BorderRadius.only(
+                                                                        bottomRight: Radius.circular(20),
+                                                                        bottomLeft: Radius.circular(20)
+                                                                    )
 
                                                                 ),
 
@@ -295,8 +302,8 @@ class _registered_housestate extends State<registered_houses> {
                                                               ),
                                                               Row(
                                                                 mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
                                                                 children: [
                                                                   Text(
                                                                     "Kitchen :",
@@ -304,25 +311,25 @@ class _registered_housestate extends State<registered_houses> {
                                                                         color: Colors
                                                                             .black,
                                                                         fontWeight:
-                                                                            FontWeight.bold),
+                                                                        FontWeight.bold),
                                                                   ),
                                                                   SizedBox(
                                                                     width: 80,
                                                                   ),
                                                                   Expanded(
                                                                     child:
-                                                                        Column(
+                                                                    Column(
                                                                       crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
+                                                                      CrossAxisAlignment
+                                                                          .start,
                                                                       children: [
                                                                         Container(
                                                                             alignment:
-                                                                                Alignment.topLeft,
+                                                                            Alignment.topLeft,
                                                                             child: Text(data['kitchen'])),
                                                                         Divider(
                                                                           color:
-                                                                              Colors.black54,
+                                                                          Colors.black54,
                                                                         )
                                                                       ],
                                                                     ),
@@ -334,8 +341,8 @@ class _registered_housestate extends State<registered_houses> {
                                                               ),
                                                               Row(
                                                                 mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
                                                                 children: [
                                                                   Text(
                                                                     "Dining :",
@@ -343,25 +350,25 @@ class _registered_housestate extends State<registered_houses> {
                                                                         color: Colors
                                                                             .black,
                                                                         fontWeight:
-                                                                            FontWeight.bold),
+                                                                        FontWeight.bold),
                                                                   ),
                                                                   SizedBox(
                                                                     width: 90,
                                                                   ),
                                                                   Expanded(
                                                                     child:
-                                                                        Column(
+                                                                    Column(
                                                                       crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
+                                                                      CrossAxisAlignment
+                                                                          .start,
                                                                       children: [
                                                                         Container(
                                                                             alignment:
-                                                                                Alignment.topLeft,
+                                                                            Alignment.topLeft,
                                                                             child: Text(data['dining'])),
                                                                         Divider(
                                                                           color:
-                                                                              Colors.black54,
+                                                                          Colors.black54,
                                                                         )
                                                                       ],
                                                                     ),
@@ -373,8 +380,8 @@ class _registered_housestate extends State<registered_houses> {
                                                               ),
                                                               Row(
                                                                 mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
                                                                 children: [
                                                                   Text(
                                                                     "Seating room :",
@@ -382,25 +389,25 @@ class _registered_housestate extends State<registered_houses> {
                                                                         color: Colors
                                                                             .black,
                                                                         fontWeight:
-                                                                            FontWeight.bold),
+                                                                        FontWeight.bold),
                                                                   ),
                                                                   SizedBox(
                                                                     width: 50,
                                                                   ),
                                                                   Expanded(
                                                                     child:
-                                                                        Column(
+                                                                    Column(
                                                                       crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
+                                                                      CrossAxisAlignment
+                                                                          .start,
                                                                       children: [
                                                                         Container(
                                                                             alignment:
-                                                                                Alignment.topLeft,
+                                                                            Alignment.topLeft,
                                                                             child: Text(data['seating_room'])),
                                                                         Divider(
                                                                           color:
-                                                                              Colors.black54,
+                                                                          Colors.black54,
                                                                         )
                                                                       ],
                                                                     ),
@@ -412,8 +419,8 @@ class _registered_housestate extends State<registered_houses> {
                                                               ),
                                                               Row(
                                                                 mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
                                                                 children: [
                                                                   Text(
                                                                     "Available rooms :",
@@ -421,25 +428,25 @@ class _registered_housestate extends State<registered_houses> {
                                                                         color: Colors
                                                                             .black,
                                                                         fontWeight:
-                                                                            FontWeight.bold),
+                                                                        FontWeight.bold),
                                                                   ),
                                                                   SizedBox(
                                                                     width: 30,
                                                                   ),
                                                                   Expanded(
                                                                     child:
-                                                                        Column(
+                                                                    Column(
                                                                       crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
+                                                                      CrossAxisAlignment
+                                                                          .start,
                                                                       children: [
                                                                         Container(
                                                                             alignment:
-                                                                                Alignment.topLeft,
+                                                                            Alignment.topLeft,
                                                                             child: Text(data['rooms'])),
                                                                         Divider(
                                                                           color:
-                                                                              Colors.black54,
+                                                                          Colors.black54,
                                                                         )
                                                                       ],
                                                                     ),
@@ -451,8 +458,8 @@ class _registered_housestate extends State<registered_houses> {
                                                               ),
                                                               Row(
                                                                 mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
                                                                 children: [
                                                                   Text(
                                                                     "Master bed room :",
@@ -460,25 +467,25 @@ class _registered_housestate extends State<registered_houses> {
                                                                         color: Colors
                                                                             .black,
                                                                         fontWeight:
-                                                                            FontWeight.bold),
+                                                                        FontWeight.bold),
                                                                   ),
                                                                   SizedBox(
                                                                     width: 25,
                                                                   ),
                                                                   Expanded(
                                                                     child:
-                                                                        Column(
+                                                                    Column(
                                                                       crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
+                                                                      CrossAxisAlignment
+                                                                          .start,
                                                                       children: [
                                                                         Container(
                                                                             alignment:
-                                                                                Alignment.topLeft,
+                                                                            Alignment.topLeft,
                                                                             child: Text(data['master_bed_room'])),
                                                                         Divider(
                                                                           color:
-                                                                              Colors.black54,
+                                                                          Colors.black54,
                                                                         )
                                                                       ],
                                                                     ),
@@ -490,8 +497,8 @@ class _registered_housestate extends State<registered_houses> {
                                                               ),
                                                               Row(
                                                                 mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
                                                                 children: [
                                                                   Text(
                                                                     "Cost per month :",
@@ -499,21 +506,21 @@ class _registered_housestate extends State<registered_houses> {
                                                                         color: Colors
                                                                             .black,
                                                                         fontWeight:
-                                                                            FontWeight.bold),
+                                                                        FontWeight.bold),
                                                                   ),
                                                                   SizedBox(
                                                                     width: 30,
                                                                   ),
                                                                   Expanded(
                                                                     child:
-                                                                        Column(
+                                                                    Column(
                                                                       crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
+                                                                      CrossAxisAlignment
+                                                                          .start,
                                                                       children: [
                                                                         Container(
                                                                             alignment:
-                                                                                Alignment.topLeft,
+                                                                            Alignment.topLeft,
                                                                             child: Row(
                                                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                               children: [
@@ -526,7 +533,7 @@ class _registered_housestate extends State<registered_houses> {
                                                                             )),
                                                                         Divider(
                                                                           color:
-                                                                              Colors.black54,
+                                                                          Colors.black54,
                                                                         )
                                                                       ],
                                                                     ),
@@ -552,6 +559,8 @@ class _registered_housestate extends State<registered_houses> {
                                                 color: Colors.black,
                                               )),
                                         ),
+
+                                        ],
                                       ),
                                     ],
                                   ),
@@ -567,7 +576,8 @@ class _registered_housestate extends State<registered_houses> {
                           itemCount: ListQueryDocumentSnapshot.length);
                     }
                     return Center(
-                      child: CircularProgressIndicator(
+                      child: SpinKitCircle(
+                        size: 50,
                         color: ButtonColor,
                       ),
                     );

@@ -22,43 +22,46 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+
+        primaryColor: Color(0xff0748A6),
       ),
-      home:  auth_state_cheker(),
+      home:  LogIn(),
     );
   }
+
 }
 
 
-class auth_state_cheker extends StatelessWidget {
-  final ButtonColor = const Color(0xff0748A6);
-  const auth_state_cheker({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) =>Scaffold(
-
-    body: StreamBuilder(
-
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot){
-          if (snapshot.connectionState==ConnectionState.waiting){
-          return Center(
-          child: CircularProgressIndicator(
-
-          color: ButtonColor,
-          ),
-          );
-          }
-          else if (snapshot.hasError){
-            return Center(child: Text("Something went wrong"),);
-          }else if(snapshot.hasData){
-            return const user_darshboard();
-          }
-          else {
-            return const LogIn();
-          }
-
-    }),
-  );
-}
+// class auth_state_cheker extends StatelessWidget {
+//   final ButtonColor = const Color(0xff0748A6);
+//   const auth_state_cheker({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) =>Scaffold(
+//
+//     body: StreamBuilder(
+//
+//         stream: FirebaseAuth.instance.authStateChanges(),
+//         builder: (context, snapshot){
+//           if (snapshot.connectionState==ConnectionState.waiting){
+//           return Center(
+//           child: CircularProgressIndicator(
+//
+//           color: ButtonColor,
+//           ),
+//           );
+//           }
+//           else if (snapshot.hasError){
+//             return Center(child: Text("Something went wrong"),);
+//           }else if(snapshot.hasData){
+//             return const user_darshboard();
+//           }
+//           else {
+//             return LogIn();
+//           }
+//
+//     }),
+//   );
+// }
 
 
