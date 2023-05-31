@@ -478,65 +478,91 @@ class _SignUpState extends State<SignUp> {
                                     borderRadius: BorderRadius.circular(10)),
                                 child: TextButton(
                                     onPressed: () async {
+
                                       if (_formKey.currentState!.validate()) {
-                                        //
-                                        // await FirebaseFirestore.instance
-                                        //     .collection("house_"
-                                        //     "Owner")
-                                        //     .doc(email_controller.text)
-                                        //     .set({
-                                        //       "email": email_controller.text,
-                                        //       "full_name":
-                                        //           full_name_controller.text,
-                                        //       "gender": gender_controller.text,
-                                        //       "password":
-                                        //           password_controller.text,
-                                        //       "primary_phone_number":
-                                        //           primary_phone_number.text,
-                                        //       "secondary_phone_number":
-                                        //           primary_phone_number.text,
-                                        //   "gender":_selectGender
-                                        //     })
+
                                         FirebaseAuth.instance
                                             .createUserWithEmailAndPassword(
-                                                email: email_controller.text,
-                                                password:
-                                                    password_controller.text)
+                                            email: email_controller.text,
+                                            password:
+                                            password_controller.text)
                                             .then((value) async => {
-                                                  await FirebaseFirestore
-                                                      .instance
-                                                      .collection(
-                                                          "house_owner_db")
-                                                      .doc(_auth
-                                                          .currentUser?.uid)
-                                                      .set({
-                                                    "email":
-                                                        email_controller.text,
-                                                    "full_name":
-                                                        full_name_controller
-                                                            .text,
-                                                    "gender":
-                                                        gender_controller.text,
-                                                    "password":
-                                                        password_controller
-                                                            .text,
-                                                    "primary_phone_number":
-                                                        primary_phone_number
-                                                            .text,
-                                                    "secondary_phone_number":
-                                                        primary_phone_number
-                                                            .text,
-                                                    "gender": _selectGender
-                                                  }).then((value) => Navigator
-                                                              .of(context)
-                                                          .push(MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      LogIn())))
-                                                })
+                                          await FirebaseFirestore
+                                              .instance
+                                              .collection(
+                                              "house_owner_db")
+                                              .doc(_auth
+                                              .currentUser?.uid)
+                                              .set({
+                                            "email":
+                                            email_controller.text,
+                                            "full_name":
+                                            full_name_controller
+                                                .text,
+                                            "gender":
+                                            gender_controller.text,
+                                            "password":
+                                            password_controller
+                                                .text,
+                                            "primary_phone_number":
+                                            primary_phone_number
+                                                .text,
+                                            "secondary_phone_number":
+                                            primary_phone_number
+                                                .text,
+                                            "gender": _selectGender
+                                          }).then((value) => Navigator
+                                              .of(context)
+                                              .push(MaterialPageRoute(
+                                              builder:
+                                                  (context) =>
+                                                  LogIn())))
+                                        })
                                             .catchError((onError) =>
-                                                {"something went wrong"});
+                                        {"something went wrong"});
                                       }
+                                      // if (_formKey.currentState!.validate()) {
+                                      //
+                                      //   FirebaseAuth.instance
+                                      //       .createUserWithEmailAndPassword(
+                                      //           email: email_controller.text,
+                                      //           password:
+                                      //               password_controller.text)
+                                      //       .then((value) async => {
+                                      //             await FirebaseFirestore
+                                      //                 .instance
+                                      //                 .collection(
+                                      //                     "house_owner_db")
+                                      //                 .doc(_auth
+                                      //                     .currentUser?.uid)
+                                      //                 .set({
+                                      //               "email":
+                                      //                   email_controller.text,
+                                      //               "full_name":
+                                      //                   full_name_controller
+                                      //                       .text,
+                                      //               "gender":
+                                      //                   gender_controller.text,
+                                      //               "password":
+                                      //                   password_controller
+                                      //                       .text,
+                                      //               "primary_phone_number":
+                                      //                   primary_phone_number
+                                      //                       .text,
+                                      //               "secondary_phone_number":
+                                      //                   primary_phone_number
+                                      //                       .text,
+                                      //               "gender": _selectGender
+                                      //             }).then((value) => Navigator
+                                      //                         .of(context)
+                                      //                     .push(MaterialPageRoute(
+                                      //                         builder:
+                                      //                             (context) =>
+                                      //                                 LogIn())))
+                                      //           })
+                                      //       .catchError((onError) =>
+                                      //           {"something went wrong"});
+                                      // }
                                     },
                                     child: (Text(
                                       "Sign Up",

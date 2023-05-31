@@ -74,27 +74,44 @@ class _renter_registration_stage1State
     // await ref.putFile(_image!);
     // downloadUrl = await ref.getDownloadURL();
 
-    await FirebaseFirestore.instance
-        .collection("renters_db")
-        .doc(email_controller.text)
-        .set({
-      "full_name": full_name_controller.text,
-      "renterId": email_controller.text,
-      "gender": _selectGender,
-      "nida_no": nida_no_controller.text,
-      "email": email_controller.text,
-      "primary_phone_number": primary_number_controller.text,
-      // "secondary_phone_number": secondary_number_controller.text,
-      "house_owner_id": _auth.currentUser?.uid,
-      // 'downloadedUrl': downloadUrl
-    }).then((value) {
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => renter_registration_stage2(
-                email: email_controller.text,
-              )));
+    try{
 
-      // FirebaseAuth.instance.createUserWithEmailAndPassword(email: email_controller.text, password: primary_number_controller.text);
-    });
+      // await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      //   email: email_controller.text,
+      //   password: primary_number_controller.text,
+      // );
+
+
+      await FirebaseFirestore.instance
+          .collection("renters_db")
+          .doc(email_controller.text)
+          .set({
+        "full_name": full_name_controller.text,
+        "renterId": email_controller.text,
+        "gender": _selectGender,
+        "nida_no": nida_no_controller.text,
+        "email": email_controller.text,
+        "primary_phone_number": primary_number_controller.text,
+        // "secondary_phone_number": secondary_number_controller.text,
+        "house_owner_id": _auth.currentUser?.uid,
+        "password": primary_number_controller.text
+        // 'downloadedUrl': downloadUrl
+      }).then((value) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => renter_registration_stage2(
+              email: email_controller.text,
+            )));
+
+        // FirebaseAuth.instance.createUserWithEmailAndPassword(email: email_controller.text, password: primary_number_controller.text);
+      });
+
+    }catch(e){
+
+      print(e.toString());
+    }
+
+
+
   }
 
   showSnackBar(String text, Duration d) {

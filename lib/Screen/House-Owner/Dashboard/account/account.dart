@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:house_rental/Screen/Registration/LogIn/LogIn.dart';
 import 'package:house_rental/Utils/PreferenceUtil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Registration/Forgotpassword/change_password.dart';
 import '../dashboard.dart';
@@ -35,6 +36,18 @@ class _salon_owner_accountState extends State<salon_owner_account> {
     await FirebaseAuth.instance.signOut().then((value) => Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => const LogIn())));
   }
+  Future<void> logOut() async {
+    // Update login status
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isLoggedIn', false);
+
+    // Navigate back to the login screen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LogIn()),
+    );
+  }
+
 
   @override
   void initState() {
@@ -323,7 +336,21 @@ class _salon_owner_accountState extends State<salon_owner_account> {
                         width: 40,
                       ),
                       TextButton(
-                        onPressed: () => _signOut(),
+                        onPressed: () async {
+
+                          logOut();
+                          // SharedPreferences pref =  await SharedPreferences.getInstance();
+                          //  pref.setBool('logIn', false);
+                          // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>LogIn()));
+                          //
+                          //  //     .then((value) =>
+                          //  //
+                          //  //     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>LogIn()))
+                          //  // );
+                          //
+
+                        },
+                        // onPressed: () => _signOut(),
                         child: const Icon(
                           Icons.logout,
                           color: Colors.black,

@@ -20,7 +20,62 @@ class _phone_number_verificationState extends State<phone_number_verification> {
   }
 Future resertpassword() async {
   await FirebaseAuth.instance.sendPasswordResetEmail(email: email_controller.text).then((value) {
-Navigator.of(context).pop();
+
+    showDialog(context: context, builder: (context){
+      return Dialog(
+        child: Container(
+          height: 130,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+
+                  margin: EdgeInsets.only(left: 10,right:10,top: 15),
+                  child: Text("Resert link is sent to your email account.",
+                    textAlign: TextAlign.center,
+                    softWrap: true,style: TextStyle(
+                        color: Colors.black,
+                      fontSize: 16
+                    ),),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Container(
+                  height: 45,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    color: ButtonColor,
+                    borderRadius: BorderRadius.all(Radius.circular(10))
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text("OK",style: TextStyle(
+                      color: Colors.white
+                    ),),
+                  ),
+                ),
+              )
+            ],
+          ),
+
+          decoration: BoxDecoration(color:Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(10)
+          )),
+        ),
+      );
+
+    }).then((value) =>
+    Navigator.of(context).pop()
+    );
 
   });
     // try{

@@ -34,6 +34,7 @@ class _contract_viewState extends State<contract_view> {
   final BackgroundColor = const Color(0xffEEEEEE);
   final CardColor = const Color(0xffFBFBFB);
   String formatedDate = '';
+  bool Containervisibility = false;
 
   String renterFullname = '';
   String renterPhoneNumber = '';
@@ -146,22 +147,56 @@ class _contract_viewState extends State<contract_view> {
         actions: [
           IconButton(
             onPressed: () {
-              // setState(() {
-              //   // uploadSignatures();
-              //   showContainer = showContainer!;
-              // });
-              // if (showContainer)
-              //   Container(
-              //     height: 200,
-              //     width: 200,
-              //     color: Colors.blue,
-              //     alignment: Alignment.topLeft,
-              //     child: Text(
-              //     'Container',
-              //     style: TextStyle(
-              //     color: Colors.white,
-              //     fontSize: 20,
-              // )));
+
+              setState(() {
+                showDialog(context: context, builder: (context){
+                  return Align(
+                    alignment: Alignment.topRight,
+                    child: Container(
+                      margin: EdgeInsets.only(top: 30),
+                      height: 150,
+                      width: 300,
+                      // width: 150,
+
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Dialog(
+                          child: Column(
+                            children: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>dashboard()));
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(left: 10,right: 10),
+                                      height: 45,
+                                      decoration:BoxDecoration(
+                                        // color: ButtonColor,
+                                        borderRadius: BorderRadius.all(Radius.circular(10))
+
+                                      ) ,
+                                      child: Align(
+                                          alignment: Alignment.center,
+                                          child: Row(
+                                            children: [
+
+                                              Icon(Icons.dashboard,size: 24,color: Colors.black54,),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text("back to dashboard",style: TextStyle(color: Colors.black),)
+                                            ],
+                                          ))))
+                            ],
+                          ),
+                        ),
+                      )
+                    ),
+                  );
+                });
+              });
+
+
             },
             icon: Icon(
               Icons.more_horiz,
@@ -768,8 +803,7 @@ class _contract_viewState extends State<contract_view> {
                                                                       150,
                                                                       width:
                                                                       150))!;
-                                                                  /**/uploadRenterSignature();
-                                                                  // Add_renter_signature();
+                                                                  uploadRenterSignature();
                                                                 });
                                                           },
                                                           icon: Icon(
