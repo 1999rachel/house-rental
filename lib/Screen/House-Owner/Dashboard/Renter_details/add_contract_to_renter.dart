@@ -71,7 +71,7 @@ class _add_contractState extends State<add_contract> {
                                 .doc(widget.renter_id)
                                 .snapshots(),
                             builder: (BuildContext context,
-                                AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                AsyncSnapshot snapshot) {
                               // print (widget.renter_id);
                               final data =
                                   snapshot.data!.data() as Map<String, dynamic>;
@@ -538,6 +538,7 @@ class _add_contractState extends State<add_contract> {
                                                                         "end_date":
                                                                             endDate
                                                                                 .toLocal(),
+                                                                        "status":'active'
                                                                       }).then((value) =>
                                                                               {
                                                                                 setState(() {

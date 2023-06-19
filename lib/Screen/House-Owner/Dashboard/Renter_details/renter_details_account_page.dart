@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import '../payments/payments_per_individual.dart';
 import 'add_contract_to_renter.dart';
 import 'check_renter_payments.dart';
 
@@ -44,22 +45,54 @@ class _renter_details_account_pageState
           IconButton(
             onPressed: () {
 
-              // setState(() {
-              //   // uploadSignatures();
-              //   showContainer = showContainer!;
-              // });
-              // if (showContainer)
-              //   Container(
-              //     height: 200,
-              //     width: 200,
-              //     color: Colors.blue,
-              //     alignment: Alignment.topLeft,
-              //     child: Text(
-              //     'Container',
-              //     style: TextStyle(
-              //     color: Colors.white,
-              //     fontSize: 20,
-              // )));
+              setState(() {
+                showDialog(context: context, builder: (context){
+                  return Align(
+                    alignment: Alignment.topRight,
+                    child: Container(
+                        margin: EdgeInsets.only(top: 30),
+                        height: 150,
+                        width: 300,
+                        // width: 150,
+
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: Dialog(
+                            child: Column(
+                              children: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>payments_per_individual(renter_id: widget.renter_id)));
+                                    },
+                                    child: Container(
+                                        margin: EdgeInsets.only(left: 10,right: 10),
+                                        height: 45,
+                                        decoration:BoxDecoration(
+                                          // color: ButtonColor,
+                                            borderRadius: BorderRadius.all(Radius.circular(10))
+
+                                        ) ,
+                                        child: Align(
+                                            alignment: Alignment.center,
+                                            child: Row(
+                                              children: [
+
+                                                Icon(Icons.dashboard,size: 24,color: Colors.black54,),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text("View contracts",style: TextStyle(color: Colors.black),)
+                                              ],
+                                            ))))
+                              ],
+                            ),
+                          ),
+                        )
+                    ),
+                  );
+                });
+              });
+
 
             },
             icon: Icon(

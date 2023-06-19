@@ -48,6 +48,7 @@ class _renter_registration_stage1State
   File? _image;
   final imagePicker = ImagePicker();
   late String downloadUrl;
+  final now = DateTime.now();
 
   Future ImagePickerMethod() async {
     // picke image form gallary
@@ -76,11 +77,6 @@ class _renter_registration_stage1State
 
     try{
 
-      // await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      //   email: email_controller.text,
-      //   password: primary_number_controller.text,
-      // );
-
 
       await FirebaseFirestore.instance
           .collection("renters_db")
@@ -94,7 +90,9 @@ class _renter_registration_stage1State
         "primary_phone_number": primary_number_controller.text,
         // "secondary_phone_number": secondary_number_controller.text,
         "house_owner_id": _auth.currentUser?.uid,
-        "password": primary_number_controller.text
+        "password": primary_number_controller.text,
+        "createdAt": now,
+        "status":"active"
         // 'downloadedUrl': downloadUrl
       }).then((value) {
         Navigator.of(context).push(MaterialPageRoute(
@@ -102,7 +100,6 @@ class _renter_registration_stage1State
               email: email_controller.text,
             )));
 
-        // FirebaseAuth.instance.createUserWithEmailAndPassword(email: email_controller.text, password: primary_number_controller.text);
       });
 
     }catch(e){
@@ -375,7 +372,7 @@ class _renter_registration_stage1State
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(color: Color(0xff0748A6))),
-                      hintText: "Enter renter first phone number",
+                      hintText: "Enter renter  phone number",
                       fillColor: Colors.white,
                       hintStyle: TextStyle(color: Colors.black54, fontSize: 15),
                       // prefixIcon: Icon(

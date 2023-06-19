@@ -23,6 +23,8 @@ class _register_houseState extends State<register_house> {
   TextEditingController rent_controller = TextEditingController();
 
   String house_owner_email = "";
+  final now = DateTime.now();
+
 
   final _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -500,6 +502,8 @@ class _register_houseState extends State<register_house> {
                                     master_bedroom_no_controller.text,
                                 "rent": rent_controller.text,
                                 "house_owner_id": _auth.currentUser?.uid,
+                            "createdAt":now,
+                            "status":"inactive",
                             // check if house number is available
                               })
                               .then((value) => {

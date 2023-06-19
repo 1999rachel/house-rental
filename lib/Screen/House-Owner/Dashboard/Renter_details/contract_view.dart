@@ -205,14 +205,14 @@ class _contract_viewState extends State<contract_view> {
             ),
           )
         ],
-        leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: Icon(
-              Icons.arrow_back_ios_new,
-              size: 24,
-            )),
+        // leading: IconButton(
+        //     onPressed: () {
+        //       Navigator.of(context).pop();
+        //     },
+        //     icon: Icon(
+        //       Icons.arrow_back_ios_new,
+        //       size: 24,
+        //     )),
       ),
 
       body: SafeArea(
@@ -1060,7 +1060,7 @@ class _contract_viewState extends State<contract_view> {
     final querysnapshot = await FirebaseFirestore.instance
         .collection("contracts_db")
         .where('renter_id', isEqualTo: widget.renter_id)
-        .where('start_date', isEqualTo: widget.start_date)
+        .where('start_date', isEqualTo: widget.start_date).where('status',isEqualTo:'active')
         .get();
 
     if(querysnapshot.docs.isNotEmpty){
@@ -1102,7 +1102,7 @@ class _contract_viewState extends State<contract_view> {
     final querysnapshot = await FirebaseFirestore.instance
         .collection("contracts_db")
         .where('renter_id', isEqualTo: widget.renter_id)
-        .where('start_date', isEqualTo: widget.start_date)
+        .where('start_date', isEqualTo: widget.start_date).where('status',isEqualTo:'active')
         .get();
 
     if(querysnapshot.docs.isNotEmpty){

@@ -283,6 +283,84 @@ class _renter_detailsState extends State<renter_details> {
 
   final renters = FirebaseFirestore.instance.collection('renters_db');
   bool isContainerVisible = false;
+
+
+  void updateRenterStatus(String renterId) {
+    FirebaseFirestore.instance
+        .collection('renters_db')
+        .doc(renterId)
+        .update({'status': 'inactive'})
+        .then((value) => print('Renter status updated successfully'))
+        .catchError((error) => print('Failed to update renter status: $error'));
+  }
+  void updateHouseStatus(String houseId) {
+    FirebaseFirestore.instance
+        .collection('houses_db')
+        .doc(houseId)
+        .update({'status': 'inactive'})
+        .then((value) => print('House status updated successfully'))
+        .catchError((error) => print('Failed to update house status: $error'));
+  }
+
+
+  Future<void> updateContractsStatus(String renterId) async {
+    try {
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
+          .collection('contracts_db')  // Replace 'your_collection' with your actual collection name
+          .where('renter_id', isEqualTo: renterId)  // Replace 'your_field' with the field you want to match
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final DocumentSnapshot<Map<String, dynamic>> documentSnapshot = querySnapshot.docs.first;
+        final String documentId = documentSnapshot.id;
+
+        await FirebaseFirestore.instance
+            .collection('contracts_db')
+            .doc(documentId)
+            .update({'status': 'inactive'});  // Replace 'status' with the field you want to update
+
+        print('Status updated successfully!');
+      } else {
+        print('Document not found!');
+      }
+    } catch (e) {
+      print('Error updating document status: $e');
+    }
+  }
+
+
+
+  void deleteRenter(String renterId) async {
+    // Fetch the renter's data
+    DocumentSnapshot renterSnapshot = await FirebaseFirestore.instance
+        .collection('renters_db')
+        .doc(renterId)
+        .get();
+
+    // Check if the renter exists
+    if (renterSnapshot.exists) {
+      // Get the house ID from the renter's data
+      String houseId = renterSnapshot['house_id'];
+
+      // Update the renter's status to inactive
+      updateRenterStatus(renterId);
+
+      // Update the status of the associated house
+      updateHouseStatus(houseId,);
+      updateContractsStatus(renterId);
+
+      // Delete the renter
+      // FirebaseFirestore.instance
+      //     .collection('renters_db')
+      //     .doc(renterId)
+      //     .delete()
+      //     .then((value) => print('Renter deleted successfully'))
+      //     .catchError((error) => print('Failed to delete renter: $error'));
+    } else {
+      print('Renter does not exist');
+    }
+  }
+
   void showContainer() {
     AlertDialog(
         title: Text('Pop-up Container'),
@@ -367,7 +445,7 @@ class _renter_detailsState extends State<renter_details> {
         backgroundColor: ButtonColor,
         leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>dashboard()));
             },
             icon: Icon(
               Icons.arrow_back_ios,
@@ -402,7 +480,7 @@ class _renter_detailsState extends State<renter_details> {
                 child: StreamBuilder<QuerySnapshot>(
                   stream: renters
                       .where("house_owner_id",
-                          isEqualTo: _auth.currentUser?.uid)
+                          isEqualTo: _auth.currentUser?.uid).where('status',isEqualTo:'active')
                       .snapshots(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
@@ -604,10 +682,16 @@ class _renter_detailsState extends State<renter_details> {
                                                                           child: TextButton(
 
                                                                             onPressed: () {
-                                                                              renters.doc(data.id).delete().then((value){
+                                                                              String renterId = data.id;
+                                                                              deleteRenter(renterId);
+                                                                              Navigator.of(context).pop();
 
-                                                                                Navigator.of(context).pop();
-                                                                              });
+
+                                                                              //
+                                                                              // renters.doc(data.id).delete().then((value){
+                                                                              //
+                                                                              //   Navigator.of(context).pop();
+                                                                              // });
 
                                                                             },
                                                                             child: Container(

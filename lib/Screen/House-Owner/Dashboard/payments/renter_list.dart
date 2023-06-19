@@ -51,7 +51,7 @@ class _renter_paymentsState extends State<renter_payments> {
                   stream: FirebaseFirestore.instance
                       .collection("renters_db")
                       .where("house_owner_id",
-                          isEqualTo: _auth.currentUser?.uid)
+                          isEqualTo: _auth.currentUser?.uid).where('status',isEqualTo:'active')
                       .snapshots(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {

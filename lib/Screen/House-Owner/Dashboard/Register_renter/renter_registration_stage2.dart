@@ -27,6 +27,166 @@ class _renter_registration_stage2State
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+
+  Future<String?> checkHouseStatus(String selectedHouseId) async {
+    DocumentSnapshot houseSnapshot = await FirebaseFirestore.instance
+        .collection('houses_db')
+        .doc(selectedHouseId)
+        .get();
+
+    String houseStatus = houseSnapshot.get('status');
+
+    return houseStatus;
+  }
+
+
+  void updateHouseStatus(String selectedHouseId,) {
+    FirebaseFirestore.instance
+        .collection('houses_db')
+        .doc(selectedHouseId)
+        .update({'status': 'active'})
+        .then((value) => print('House status updated successfully'))
+        .catchError((error) => print('Failed to update house status: $error'));
+  }
+
+  void updateRenterHouse( String selectedHouseId) {
+    FirebaseFirestore.instance
+        .collection('renters_db')
+        .doc(widget.email)
+        .update({'house_id': selectedHouseId})
+        .then((value) => print('Renter house updated successfully'))
+        .catchError((error) => print('Failed to update renter house: $error'));}
+
+    Future<void> onButtonPressed(String selectedHouseId) async {
+      String? houseStatus = await checkHouseStatus(selectedHouseId);
+
+      if (houseStatus == 'inactive') {
+        // House is inactive, update the status to active
+        updateHouseStatus(selectedHouseId);
+
+        // Update the renter's house in the database
+        // String renterId = 'REPLACE_WITH_RENTER_ID'; // Replace with actual renter ID
+        updateRenterHouse( selectedHouseId);
+
+        Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) =>
+                        renter_details()));
+        // );
+      } else if (houseStatus == 'active') {
+        // House is already occupied
+
+        setState(() {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Dialog(
+                child:Container(
+                  padding: EdgeInsets.only(left: 10,right: 10),
+                  height: 130,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(15))
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+
+                    children: [
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        'This house is already occupied. Please choose another house.',textAlign: TextAlign.center,),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Container(
+                        height: 35,
+                        width: 80,
+                        decoration: BoxDecoration(color: ButtonColor,
+                            borderRadius: BorderRadius.all(Radius.circular(10))
+                        ),
+                        child: TextButton(
+                          child: Text('OK',style: TextStyle(
+                              color: Colors.white
+                          ),),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      )
+
+                    ],
+                  ),
+                ),
+
+
+
+              );
+            },
+          );
+        });
+
+      } else {
+        // House status is neither inactive nor active
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return  Dialog(
+              child:Container(
+                padding: EdgeInsets.only(left: 10,right: 10),
+                height: 130,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(15))
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+
+                  children: [
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Invalide house status. Please try again',textAlign: TextAlign.center,),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Container(
+                      height: 35,
+                      width: 80,
+                      decoration: BoxDecoration(color: ButtonColor,
+                          borderRadius: BorderRadius.all(Radius.circular(10))
+                      ),
+                      child: TextButton(
+                        child: Text('OK',style: TextStyle(
+                            color: Colors.white
+                        ),),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    )
+
+                  ],
+                ),
+              ),
+
+
+
+            );
+          },
+        );
+      }
+    }
+
+
   // final Stream<QuerySnapshot> _house =
   //     FirebaseFirestore.instance.collection("houses").snapshots();
   // late Stream<QuerySnapshot> _house;
@@ -55,14 +215,7 @@ class _renter_registration_stage2State
         centerTitle: true,
         backgroundColor: ButtonColor,
         elevation: 0,
-        leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: Colors.white,
-            )),
+        leading: Container(),
         title: Text(
           "Registered houses",
           style: TextStyle(color: Colors.white, fontSize: 17),
@@ -127,17 +280,70 @@ class _renter_registration_stage2State
                                   onTap: () {
                                     setState(() {
                                       try {
-                                        FirebaseFirestore.instance
-                                            .collection("renters_db")
-                                            .doc(widget.email)
-                                             .update({"house_id": data.id});
-                                            // .update(
-                                            //     {"house_no": data['house_no']});
+                                        final selectedHouseId = data.id;
+                                        onButtonPressed(selectedHouseId);
 
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    renter_details()));
+
+
+
+
+
+
+                                        // setState(() async {
+                                        //
+                                        //   FirebaseFirestore.instance
+                                        //       .collection("renters_db")
+                                        //       .doc(widget.email)
+                                        //       .update({"house_id": data.id,});
+                                        //
+                                        //   Navigator.of(context).push(
+                                        //       MaterialPageRoute(
+                                        //           builder: (context) =>
+                                        //               renter_details())
+                                        //   );
+                                        //   //
+                                        //   // DocumentSnapshot houseSnapshot = await FirebaseFirestore.instance
+                                        //   //     .collection('houses_db')
+                                        //   //     .doc(selectedHouseId)
+                                        //   //     .get();
+                                        //
+                                        //   // String houseStatus = houseSnapshot.get('status');
+                                        //   // if(houseStatus=='inactive'){
+                                        //   //   FirebaseFirestore.instance.collection("houses_db").doc(selectedHouseId).update({"status":'active'}).then((value) {
+                                        //   //     FirebaseFirestore.instance
+                                        //   //         .collection("renters_db")
+                                        //   //         .doc(widget.email)
+                                        //   //         .update({"house_id": data.id,}).then((value) =>Navigator.of(context).push(
+                                        //   //         MaterialPageRoute(
+                                        //   //             builder: (context) =>
+                                        //   //                 renter_details())) );
+                                        //   //
+                                        //   //
+                                        //   //
+                                        //   //   });
+                                        //   // }
+                                        // });
+                                        // checkHouseStatus(selectedHouseId);
+                                        //
+                                        // FirebaseFirestore.instance
+                                        //     .collection("renters_db")
+                                        //     .doc(widget.email)
+                                        //      .update({"house_id": data.id,});
+                                        // //     .then((value) async {
+                                        // //
+                                        // //   DocumentSnapshot<Map<String,dynamic>> houseData  =   await FirebaseFirestore.instance.collection("houses_db").doc(data.id).get();
+                                        // //   if(houseData.exists){
+                                        // //
+                                        // //   }
+                                        // //
+                                        // // })
+                                        //     // .update(
+                                        //     //     {"house_no": data['house_no']});
+                                        //
+                                        // Navigator.of(context).push(
+                                        //     MaterialPageRoute(
+                                        //         builder: (context) =>
+                                        //             renter_details()));
                                       } catch (e) {
                                         Text("Something went wrong");
                                       }
@@ -1038,8 +1244,8 @@ class _renter_registration_stage2State
         ),
       ),
     );
-  }
-}
+  }}
+
 
 //
 // Expanded(

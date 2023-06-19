@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../../../Utils/UpperCaseTextFormat.dart';
 import '../LogIn/LogIn.dart';
@@ -13,8 +15,8 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  final ListOfGender = ['Gender', 'Female', 'Male'];
-  String _selectGender = 'Gender';
+  final ListOfGender = ['Female', 'Male'];
+  String _selectGender = 'Female';
   TextEditingController email_controller = TextEditingController();
   TextEditingController password_controller = TextEditingController();
   TextEditingController primary_phone_number = TextEditingController();
@@ -24,6 +26,8 @@ class _SignUpState extends State<SignUp> {
   TextEditingController confirm_controller = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+
+
   bool isLoading = false;
 
   @override
@@ -42,12 +46,14 @@ class _SignUpState extends State<SignUp> {
 
   final ButtonColor = const Color(0xff0748A6);
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final now = DateTime.now();
+  // final createdAt = '${now.day}. ${now.month}. ${now.year}';
   // isLoading ? Center(child: SpinKitCircle(color: ButtonColor)) : Container(),
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      body:SafeArea(
           child: Form(
               autovalidateMode: AutovalidateMode.onUserInteraction,
               key: _formKey,
@@ -305,59 +311,59 @@ class _SignUpState extends State<SignUp> {
                                       )),
                                 ),
                               ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Container(
-                                // height: 45,
-                                child: TextFormField(
-                                  validator: (value) {
-                                    if (value!.length < 10) {
-                                      return 'Please enter ten digits of phone number';
-                                    } else if (value ==
-                                        primary_phone_number.text) {
-                                      return 'Phone number already exist';
-                                    }
-                                  },
-                                  controller: secondary_phone_number,
-                                  cursorColor: Colors.black,
-                                  keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.only(
-                                          top: 5, bottom: 5, left: 20),
-                                      enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                              width: 0.5,
-                                              color: Colors.black38)),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: Color(0xff0748A6),
-                                            width: 0.5,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                              color: Color(0xff0748A6))),
-                                      label: Text(
-                                        "phone 2",
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 15),
-                                      ),
-                                      hintText: "Enter your phone number",
-                                      fillColor: Colors.white,
-                                      hintStyle: TextStyle(
-                                          color: Colors.black38, fontSize: 15),
-                                      prefixIcon: Icon(
-                                        Icons.call,
-                                        color: Colors.black54,
-                                      )),
-                                ),
-                              ),
+                              // SizedBox(
+                              //   height: 15,
+                              // ),
+                              // Container(
+                              //   // height: 45,
+                              //   child: TextFormField(
+                              //     validator: (value) {
+                              //       if (value!.length < 10) {
+                              //         return 'Please enter ten digits of phone number';
+                              //       } else if (value ==
+                              //           primary_phone_number.text) {
+                              //         return 'Phone number already exist';
+                              //       }
+                              //     },
+                              //     controller: secondary_phone_number,
+                              //     cursorColor: Colors.black,
+                              //     keyboardType: TextInputType.number,
+                              //     decoration: InputDecoration(
+                              //         contentPadding: EdgeInsets.only(
+                              //             top: 5, bottom: 5, left: 20),
+                              //         enabledBorder: OutlineInputBorder(
+                              //             borderRadius:
+                              //                 BorderRadius.circular(10),
+                              //             borderSide: BorderSide(
+                              //                 width: 0.5,
+                              //                 color: Colors.black38)),
+                              //         focusedBorder: OutlineInputBorder(
+                              //             borderSide: BorderSide(
+                              //               color: Color(0xff0748A6),
+                              //               width: 0.5,
+                              //             ),
+                              //             borderRadius:
+                              //                 BorderRadius.circular(10)),
+                              //         border: OutlineInputBorder(
+                              //             borderRadius:
+                              //                 BorderRadius.circular(10),
+                              //             borderSide: BorderSide(
+                              //                 color: Color(0xff0748A6))),
+                              //         label: Text(
+                              //           "phone 2",
+                              //           style: TextStyle(
+                              //               color: Colors.black, fontSize: 15),
+                              //         ),
+                              //         hintText: "Enter your phone number",
+                              //         fillColor: Colors.white,
+                              //         hintStyle: TextStyle(
+                              //             color: Colors.black38, fontSize: 15),
+                              //         prefixIcon: Icon(
+                              //           Icons.call,
+                              //           color: Colors.black54,
+                              //         )),
+                              //   ),
+                              // ),
                               SizedBox(
                                 height: 15,
                               ),
@@ -481,6 +487,7 @@ class _SignUpState extends State<SignUp> {
 
                                       if (_formKey.currentState!.validate()) {
 
+
                                         FirebaseAuth.instance
                                             .createUserWithEmailAndPassword(
                                             email: email_controller.text,
@@ -507,16 +514,26 @@ class _SignUpState extends State<SignUp> {
                                             "primary_phone_number":
                                             primary_phone_number
                                                 .text,
-                                            "secondary_phone_number":
-                                            primary_phone_number
-                                                .text,
-                                            "gender": _selectGender
-                                          }).then((value) => Navigator
-                                              .of(context)
-                                              .push(MaterialPageRoute(
-                                              builder:
-                                                  (context) =>
-                                                  LogIn())))
+                                            // "secondary_phone_number":
+                                            // primary_phone_number
+                                            //     .text,
+                                            "gender": _selectGender,
+                                            "createdAt":now,
+                                          
+                                          }).then((value) {
+                                            setState(() {
+                                              isLoading=true;
+                                            });
+                                            Navigator
+                                                .of(context)
+                                                .push(MaterialPageRoute(
+                                                builder:
+                                                    (context) =>
+                                                    LogIn()));
+                                          }
+
+
+                                          )
                                         })
                                             .catchError((onError) =>
                                         {"something went wrong"});
@@ -570,6 +587,11 @@ class _SignUpState extends State<SignUp> {
                                           color: Colors.white, fontSize: 17),
                                     ))),
                               ),
+                              isLoading ? Container(
+                                child: Center(child: SpinKitCircle(
+                                  color: ButtonColor,
+                                ),),
+                              ):
                               SizedBox(
                                 height: 20,
                               ),
@@ -611,7 +633,7 @@ class _SignUpState extends State<SignUp> {
                         ),
                       ))
                     ],
-                  )))),
+                  ))))
     );
   }
 }

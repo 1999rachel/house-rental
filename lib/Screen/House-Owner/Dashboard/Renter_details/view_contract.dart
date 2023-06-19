@@ -84,20 +84,45 @@ class _view_contractState extends State<view_contract> {
   //
   // }
 
-  void fetchRenterDetails() {
-    Future<DocumentSnapshot> renter = FirebaseFirestore.instance
-        .collection('renters_db')
-        .doc(widget.renter_id)
-        .get();
-    renter.then((value) => {
-      setState(() {
-        renterFullname = value['full_name'];
-        renterPhoneNumber = value['primary_phone_number'];
-      }),
-      fetchHouseOwnerDetails(value['house_owner_id']),
-      fetchHouseDetails(value['house_id']),
-    });
+  Future<Object?> fetchRenterDetails() async {
+    try {
+      final DocumentSnapshot<Map<String, dynamic>> renterSnapshot = await FirebaseFirestore.instance
+          .collection('renters_db') // Replace 'renters' with the actual collection name
+          .doc(widget.renter_id) // Replace `widget.renter_id` with the desired document ID
+          .get();
+
+      // Check if the renter exists and has an active status
+      if (renterSnapshot.exists && renterSnapshot.data()!['status'] == 'active') {
+        return renterSnapshot;
+      } else {
+        // Renter not found or has an inactive status
+        return 'renter not found';
+      }
+    } catch (e) {
+      print('Error fetching renter data: $e');
+      return null;
+    }
   }
+  //
+  //
+  // void fetchRenterDetails() {
+  //   Future<DocumentSnapshot> renter = FirebaseFirestore.instance
+  //       .collection('renters_db')
+  //       .doc(widget.renter_id)
+  //       .get();
+  //
+  //   if(renter.ex)
+  //   // renter.then((value) => {
+  //   //   setState(() {
+  //   //     renterFullname = value['full_name'];
+  //   //     renterPhoneNumber = value['primary_phone_number'];
+  //   //   }),
+  //   //   fetchHouseOwnerDetails(value['house_owner_id']),
+  //   //   fetchHouseDetails(value['house_id']),
+  //   // });
+  // }
+
+
 
   void fetchHouseOwnerDetails(String house_owner_id) {
     Future<DocumentSnapshot> houseOwner = FirebaseFirestore.instance
@@ -140,7 +165,7 @@ class _view_contractState extends State<view_contract> {
         backgroundColor: ButtonColor,
         centerTitle: true,
         title: Text(
-          "Contract",
+          "Contracts",
           style: TextStyle(color: Colors.white, fontSize: 17),
         ),
         // actions: [
@@ -192,7 +217,7 @@ class _view_contractState extends State<view_contract> {
                     stream: FirebaseFirestore.instance
                         .collection("contracts_db")
                         .where('renter_id', isEqualTo: widget.renter_id)
-                        .where('start_date', isEqualTo: widget.start_date)
+                        .where('start_date', isEqualTo: widget.start_date).where('status',isEqualTo:'active')
                         .snapshots(),
                     builder: (context, AsyncSnapshot snapshot) {
                       if (snapshot.hasError) {
@@ -345,7 +370,7 @@ class _view_contractState extends State<view_contract> {
                                       ),
                                       TextSpan(
                                         text:
-                                        'wa Dodoma ambae ndani ya mkataba huu anajulikana kama mmiliki wa nyumba/chumba na ndugu  ',
+                                       'wa Dodoma ambae ndani ya mkataba huu anajulikana kama mmiliki wa nyumba/chumba na ndugu  ',
                                         style: TextStyle(
                                           color: Colors.black,
                                           wordSpacing: 5,

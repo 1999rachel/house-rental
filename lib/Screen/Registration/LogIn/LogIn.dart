@@ -305,66 +305,95 @@ class _LogInState extends State<LogIn> {
                                         user_credential.code == 'user-not-found'||
                                     user_credential.code== ' wrong-password')) {
                                     showDialog(context: context, builder: (context){
-                                      return AlertDialog(
-                                        content: Center(
-                                          child: Text("Invalid Email of Password"),
+                                      return Center(
+                                        child: Container(
+                                          height: 150,
+                                          width: double.infinity,
+                                          color: Colors.white,
+                                          child: Column(
+                                            children: [
+                                              Text("ajsdcadchkhad")
+                                            ],
+                                          ),
                                         ),
                                       );
 
                                     });
 
                                   }
-                                  else{
-                                    // setState(() {
-                                    //
-                                    //    isLoading = false;
-                                    //
-                                    // });
-                                    showDialog(context: context, builder: (context){
-                                      return
-                                       Container(
-                                         height: 100,
-                                         child: AlertDialog(
-                                            content: Container(
-                                              height: 100,
-                                              child: Center(
-                                                child: Text("Invalid Email of Password",),
-                                              ),
-                                            ),
-                                            actions: <Widget>[
-                                              Center(child: Container(
-                                                  height:45,
-                                                  width: 100,
-                                                  decoration: BoxDecoration(
-                                                    color: ButtonColor,
-                                                    borderRadius: BorderRadius.all(Radius.circular(10))
-
-                                                  ),
-                                                  child: Center(child: TextButton(
-                                                    onPressed: (){
-                                              setState(() {
-                                                isLoading = false;
-                                              });
-                                                      Navigator.of(context).pop();
-                                                    },
-                                                    child: Text('OK',style: TextStyle(
-                                                      color: Colors.white,
-                                                    ),),
-                                                  )))),
-
-                                              SizedBox(
-                                                height: 20,
-                                              )
-                                            ],
-
-                                      ),
-                                       );
-
-                                    });
-
-
-
-                                  }
+                                  // else{
+                                  //   setState(() {
+                                  //
+                                  //      isLoading = false;
+                                  //
+                                  //   });
+                                  //   showDialog(context: context, builder: (context){
+                                  //     return
+                                  //      Center
+                                  //        (
+                                  //        child: Dialog(
+                                  //           child: Container(
+                                  //             padding: EdgeInsets.only(top: 25),
+                                  //             height:150,
+                                  //
+                                  //               width:double.infinity,
+                                  //             decoration: BoxDecoration(
+                                  //               borderRadius: BorderRadius.all(Radius.circular(20)),
+                                  //               color: Colors.white,
+                                  //
+                                  //             ),
+                                  //             child: Column(
+                                  //               crossAxisAlignment: CrossAxisAlignment.center,
+                                  //               children: [
+                                  //                 SizedBox(
+                                  //                   height: 10,
+                                  //                 ),
+                                  //
+                                  //                 Container(
+                                  //                   child: Center(
+                                  //                     child: Text("Invalid Email or Password!",),
+                                  //                   ),
+                                  //                 ),
+                                  //                 SizedBox(
+                                  //                   height: 20,
+                                  //                 ),
+                                  //                 Container(
+                                  //                     height:45,
+                                  //                     width: 100,
+                                  //                     decoration: BoxDecoration(
+                                  //                         color: ButtonColor,
+                                  //                         borderRadius: BorderRadius.all(Radius.circular(10))
+                                  //
+                                  //                     ),
+                                  //                     child: Center(child: TextButton(
+                                  //                       onPressed: (){
+                                  //                         setState(() {
+                                  //                           isLoading = false;
+                                  //                         });
+                                  //                         Navigator.of(context).pop();
+                                  //                       },
+                                  //                       child: Text('OK',style: TextStyle(
+                                  //                         color: Colors.white,
+                                  //                       ),),
+                                  //                     ))),
+                                  //                 SizedBox(
+                                  //                   height: 10,
+                                  //                 )
+                                  //               ],
+                                  //             ),
+                                  //           )
+                                  //
+                                  //
+                                  //
+                                  //
+                                  //     ),
+                                  //      );
+                                  //
+                                  //   });
+                                  //
+                                  //
+                                  //
+                                  // }
 
                             }
     // catch (user_credentials) {
