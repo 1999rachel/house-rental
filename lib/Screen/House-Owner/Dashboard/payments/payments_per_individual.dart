@@ -57,12 +57,14 @@ class _payments_per_individualState extends State<payments_per_individual> {
                       .where('renter_id', isEqualTo: widget.renter_id).where('status', isEqualTo:'active')
                       .snapshots(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (!snapshot.hasData) {
-                      // return Text("Something went wrong");
-                      return Center(
-                        child: Center(child: SpinKitCircle(color: ButtonColor)),
-                      );
-                    }
+                    // if (!snapshot.hasData) {
+                    //    return Center(
+                    //      child: Text("No contract made at the moment"),
+                    //    );
+                    //   return Center(
+                    //     child: Center(child: SpinKitCircle(color: ButtonColor)),
+                    //   );
+                    // }
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(
                         child: Center(child: SpinKitCircle(color: ButtonColor)),

@@ -257,11 +257,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:house_rental/Screen/House-Owner/Dashboard/Renter_details/renter_details_account_page.dart';
+import 'package:house_rental/Screen/House-Owner/Dashboard/Renter_details/search_renter_page.dart';
 
 import '../../../../Utils/PreferenceUtil.dart';
 import '../Register_renter/renter_registration_stage1.dart';
 import '../account/account.dart';
 import '../dashboard.dart';
+import '../notification/notification_page.dart';
 
 class renter_details extends StatefulWidget {
   renter_details({
@@ -284,7 +286,6 @@ class _renter_detailsState extends State<renter_details> {
   final renters = FirebaseFirestore.instance.collection('renters_db');
   bool isContainerVisible = false;
 
-
   void updateRenterStatus(String renterId) {
     FirebaseFirestore.instance
         .collection('renters_db')
@@ -293,6 +294,7 @@ class _renter_detailsState extends State<renter_details> {
         .then((value) => print('Renter status updated successfully'))
         .catchError((error) => print('Failed to update renter status: $error'));
   }
+
   void updateHouseStatus(String houseId) {
     FirebaseFirestore.instance
         .collection('houses_db')
@@ -302,22 +304,28 @@ class _renter_detailsState extends State<renter_details> {
         .catchError((error) => print('Failed to update house status: $error'));
   }
 
-
   Future<void> updateContractsStatus(String renterId) async {
     try {
-      final QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
-          .collection('contracts_db')  // Replace 'your_collection' with your actual collection name
-          .where('renter_id', isEqualTo: renterId)  // Replace 'your_field' with the field you want to match
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
+          .instance
+          .collection(
+              'contracts_db') // Replace 'your_collection' with your actual collection name
+          .where('renter_id',
+              isEqualTo:
+                  renterId) // Replace 'your_field' with the field you want to match
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        final DocumentSnapshot<Map<String, dynamic>> documentSnapshot = querySnapshot.docs.first;
+        final DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+            querySnapshot.docs.first;
         final String documentId = documentSnapshot.id;
 
         await FirebaseFirestore.instance
             .collection('contracts_db')
             .doc(documentId)
-            .update({'status': 'inactive'});  // Replace 'status' with the field you want to update
+            .update({
+          'status': 'inactive'
+        }); // Replace 'status' with the field you want to update
 
         print('Status updated successfully!');
       } else {
@@ -328,7 +336,61 @@ class _renter_detailsState extends State<renter_details> {
     }
   }
 
+  Future<void> updateNotificationStatus(String renterId) async {
+    try {
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
+          .instance
+          .collection(
+              'notifications_db') // Replace 'your_collection' with your actual collection name
+          .where('renter_id',
+              isEqualTo:
+                  renterId) // Replace 'your_field' with the field you want to match
+          .get();
 
+      if (querySnapshot.docs.isNotEmpty) {
+        final DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+            querySnapshot.docs.first;
+        final String documentId = documentSnapshot.id;
+
+        await FirebaseFirestore.instance
+            .collection('contracts_db')
+            .doc(documentId)
+            .update({
+          'status': 'inactive'
+        }); // Replace 'status' with the field you want to update
+
+        print('Status updated successfully!');
+      } else {
+        print('Document not found!');
+      }
+    } catch (e) {
+      print('Error updating document status: $e');
+    }
+  }
+  // Future<void> updateNotificationStatus(String renterId) async {
+  //   try {
+  //     final QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
+  //         .collection('notifications_db')  // Replace 'your_collection' with your actual collection name
+  //         .where('renterEmail', isEqualTo: renterId)  // Replace 'your_field' with the field you want to match
+  //         .get();
+  //
+  //     if (querySnapshot.docs.isNotEmpty) {
+  //       final DocumentSnapshot<Map<String, dynamic>> documentSnapshot = querySnapshot.docs.first;
+  //       final String documentId = documentSnapshot.id;
+  //
+  //       await FirebaseFirestore.instance
+  //           .collection('notifications_db')
+  //           .doc(documentId)
+  //           .update({'status': 'inactive'});  // Replace 'status' with the field you want to update
+  //
+  //       print('Status updated successfully!');
+  //     } else {
+  //       print('Document not found!');
+  //     }
+  //   } catch (e) {
+  //     print('Error updating document status: $e');
+  //   }
+  // }
 
   void deleteRenter(String renterId) async {
     // Fetch the renter's data
@@ -346,8 +408,11 @@ class _renter_detailsState extends State<renter_details> {
       updateRenterStatus(renterId);
 
       // Update the status of the associated house
-      updateHouseStatus(houseId,);
+      updateHouseStatus(
+        houseId,
+      );
       updateContractsStatus(renterId);
+      updateNotificationStatus(renterId);
 
       // Delete the renter
       // FirebaseFirestore.instance
@@ -364,19 +429,19 @@ class _renter_detailsState extends State<renter_details> {
   void showContainer() {
     AlertDialog(
         title: Text('Pop-up Container'),
-    content: Container(
-    height: 200,
-    width: 200,
-    color: Colors.blue,
-    alignment: Alignment.center,
-    child: Text(
-    'This is a pop-up container',
-    style: TextStyle(
-    color: Colors.white,
-    fontSize: 20,
-    ),
-    ),
-    ));
+        content: Container(
+          height: 200,
+          width: 200,
+          color: Colors.blue,
+          alignment: Alignment.center,
+          child: Text(
+            'This is a pop-up container',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+            ),
+          ),
+        ));
 
     // setState(() {
     //   isContainerVisible = true;
@@ -418,7 +483,11 @@ class _renter_detailsState extends State<renter_details> {
             ),
           ),
           IconButton(
-              onPressed: () {}, icon: Icon(Icons.notifications, size: 30)),
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => notification_page()));
+              },
+              icon: Icon(Icons.notifications, size: 30)),
           IconButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
@@ -445,7 +514,8 @@ class _renter_detailsState extends State<renter_details> {
         backgroundColor: ButtonColor,
         leading: IconButton(
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>dashboard()));
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => dashboard()));
             },
             icon: Icon(
               Icons.arrow_back_ios,
@@ -454,7 +524,10 @@ class _renter_detailsState extends State<renter_details> {
             )),
         actions: [
           IconButton(
-              onPressed: showContainer,
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => search_renter_page()));
+              },
               icon: Icon(
                 Icons.search,
                 size: 24,
@@ -480,7 +553,8 @@ class _renter_detailsState extends State<renter_details> {
                 child: StreamBuilder<QuerySnapshot>(
                   stream: renters
                       .where("house_owner_id",
-                          isEqualTo: _auth.currentUser?.uid).where('status',isEqualTo:'active')
+                          isEqualTo: _auth.currentUser?.uid)
+                      .where('status', isEqualTo: 'active')
                       .snapshots(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
@@ -541,18 +615,17 @@ class _renter_detailsState extends State<renter_details> {
                                           width: 60,
                                           height: 60,
                                           child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(50),
-                                            // child: Image.network(
-                                            //   data['downloadedUrl'],
-                                            //   fit: BoxFit.cover,
-                                            // ),
-                                            child: Icon(
-                                              Icons.person,
-                                              size: 40,
-                                              color: Colors.black54,
-                                            )
-                                          ),
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                              // child: Image.network(
+                                              //   data['downloadedUrl'],
+                                              //   fit: BoxFit.cover,
+                                              // ),
+                                              child: Icon(
+                                                Icons.person,
+                                                size: 40,
+                                                color: Colors.black54,
+                                              )),
                                           decoration: BoxDecoration(
                                               color: BackgroundColor,
                                               borderRadius:
@@ -608,6 +681,26 @@ class _renter_detailsState extends State<renter_details> {
                                                   ],
                                                 );
                                               }
+                                              if (houseSnapshot.hasError) {
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      "House no.",
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 2,
+                                                    ),
+                                                    Text(
+                                                      "Invalide house",
+                                                      style: TextStyle(
+                                                          color: Color(
+                                                              0xffC21F1F)),
+                                                    )
+                                                  ],
+                                                );
+                                              }
 
                                               return Text("Loading...");
                                             },
@@ -624,42 +717,59 @@ class _renter_detailsState extends State<renter_details> {
                                               onTap: () {
                                                 // renters.doc(data.id).delete();
                                                 setState(() {
-
                                                   showDialog(
-                                                      context:
-                                                      context,
-                                                      builder:
-                                                          (context) {
+                                                      context: context,
+                                                      builder: (context) {
                                                         return Dialog(
                                                           child: Container(
                                                               height: 130,
-                                                              width: double.infinity,
+                                                              width: double
+                                                                  .infinity,
                                                               child: Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .center,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
                                                                 children: [
                                                                   Center(
                                                                     child: Text(
-                                                                      softWrap: true,
-                                                                      style: TextStyle(
-                                                                        color: Colors.black,
+                                                                      softWrap:
+                                                                          true,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .black,
                                                                         // fontSize: 17
                                                                       ),
                                                                       "Do you want to delete this user?",
-                                                                      textAlign: TextAlign.center,
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
                                                                     ),
                                                                   ),
                                                                   SizedBox(
                                                                     height: 20,
                                                                   ),
                                                                   Padding(
-                                                                    padding: EdgeInsets.only(left: 20, right: 20),
+                                                                    padding: EdgeInsets.only(
+                                                                        left:
+                                                                            20,
+                                                                        right:
+                                                                            20),
                                                                     child: Row(
-                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
                                                                       children: [
                                                                         Expanded(
-                                                                          child: TextButton(
-                                                                            onPressed: () { Navigator.of(context).pop(); },
+                                                                          child:
+                                                                              TextButton(
+                                                                            onPressed:
+                                                                                () {
+                                                                              Navigator.of(context).pop();
+                                                                            },
                                                                             child: Container(
                                                                                 height: 40,
                                                                                 width: 150,
@@ -676,25 +786,26 @@ class _renter_detailsState extends State<renter_details> {
                                                                           ),
                                                                         ),
                                                                         SizedBox(
-                                                                          width: 20,
+                                                                          width:
+                                                                              20,
                                                                         ),
                                                                         Expanded(
-                                                                          child: TextButton(
-
-                                                                            onPressed: () {
+                                                                          child:
+                                                                              TextButton(
+                                                                            onPressed:
+                                                                                () {
                                                                               String renterId = data.id;
                                                                               deleteRenter(renterId);
                                                                               Navigator.of(context).pop();
-
 
                                                                               //
                                                                               // renters.doc(data.id).delete().then((value){
                                                                               //
                                                                               //   Navigator.of(context).pop();
                                                                               // });
-
                                                                             },
-                                                                            child: Container(
+                                                                            child:
+                                                                                Container(
                                                                               height: 40,
                                                                               width: 200,
                                                                               decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.all(Radius.circular(10))),

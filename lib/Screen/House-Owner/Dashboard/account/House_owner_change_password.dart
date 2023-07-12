@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 
 import '../../../Registration/LogIn/LogIn.dart';
 
-class salon_owner_change_password extends StatefulWidget {
-  const salon_owner_change_password({Key? key}) : super(key: key);
+class House_owner_change_password extends StatefulWidget {
+  const House_owner_change_password({Key? key}) : super(key: key);
 
   @override
-  State<salon_owner_change_password> createState() => _salon_owner_change_passwordState();
+  State<House_owner_change_password> createState() => _House_owner_change_passwordState();
 }
 
-class _salon_owner_change_passwordState extends State<salon_owner_change_password> {
+class _House_owner_change_passwordState extends State<House_owner_change_password> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(

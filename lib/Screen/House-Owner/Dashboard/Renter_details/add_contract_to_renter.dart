@@ -1,9 +1,18 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:house_rental/Screen/House-Owner/Dashboard/Renter_details/contract_view.dart';
+import 'package:house_rental/Screen/House-Owner/Dashboard/Renter_details/renter_detail.dart';
 
 import 'check_renter_payments.dart';
+import 'contract_view.dart';
+
+
+
+
+
+
 
 class add_contract extends StatefulWidget {
   // ignore: non_constant_identifier_names
@@ -25,6 +34,111 @@ class _add_contractState extends State<add_contract> {
   DateTime startDate = DateTime.now();
   late DateTime endDate;
   bool _isLoading = false;
+  void checkContractAvailability(DateTime startDate) async {
+    String renterId = widget.renter_id; // Replace with the actual renter ID
+  // Replace with the entered start date value
+
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('contracts_db')
+        .where('renter_id', isEqualTo: renterId)
+        .where('startDate', isEqualTo: startDate)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      // A contract with the same start date for the renter ID already exists
+      print('Contract already exists for the specified start date.');
+      // You can show an alert or display an error message to the user here
+    } else {
+      // Start date is available, proceed with contract creation
+      FirebaseFirestore
+                        .instance
+                        .collection(
+                            "contracts_db")
+                        .doc()
+                        .set({
+                      "start_date":
+                          startDate,
+                      "paid_amount":
+                          paid_amount_controller
+                              .text,
+                      "garbage_cost":
+                          gabage_amount_controller
+                              .text,
+                      "security_cost":
+                          security_amount_controller
+                              .text,
+                      "renter_id":
+                          widget
+                              .renter_id,
+                      "renter_contract":
+                          "",
+                      "end_date":
+                          endDate
+                              .toLocal(),
+                      "status":'active'
+                    }).then((value) =>
+                            {
+                              setState(() {
+                                _isLoading = false;
+                              }),
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => contract_view(renter_id: widget.renter_id, start_date: startDate)))
+                            });
+                  }
+
+  }
+
+  // checkifStartateIsAvailable(startDate) async {
+  //
+  //   QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+  //       .collection('contracts_db')
+  //       .where('renter_id', isEqualTo: widget.renter_id)
+  //       .where('start_date', isEqualTo: startDate).where('status',isEqualTo: 'active')
+  //       .get();
+  //   if (querySnapshot.docs.isNotEmpty) {
+  //     // A contract with the same start date for the renter ID already exists
+  //     print('Contract already exists for the specified start date.');
+  //     // You can show an alert or display an error message to the user here
+  //   } else {
+  //     // Start date is available, proceed with contract creation
+  //     FirebaseFirestore
+  //                       .instance
+  //                       .collection(
+  //                           "contracts_db")
+  //                       .doc()
+  //                       .set({
+  //                     "start_date":
+  //                         startDate,
+  //                     "paid_amount":
+  //                         paid_amount_controller
+  //                             .text,
+  //                     "garbage_cost":
+  //                         gabage_amount_controller
+  //                             .text,
+  //                     "security_cost":
+  //                         security_amount_controller
+  //                             .text,
+  //                     "renter_id":
+  //                         widget
+  //                             .renter_id,
+  //                     "renter_contract":
+  //                         "",
+  //                     "end_date":
+  //                         endDate
+  //                             .toLocal(),
+  //                     "status":'active'
+  //                   }).then((value) =>
+  //                           {
+  //                             setState(() {
+  //                               _isLoading = false;
+  //                             }),
+  //                             Navigator.of(context).push(MaterialPageRoute(builder: (context) => contract_view(renter_id: widget.renter_id, start_date: startDate)))
+  //                           });
+  //                 }
+  //
+  //
+  //
+  //
+  // }
 
   @override
   void dispose() {
@@ -48,7 +162,7 @@ class _add_contractState extends State<add_contract> {
           ),
           leading: IconButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>renter_details()));
               },
               icon: Icon(
                 Icons.arrow_back_ios,
@@ -489,7 +603,7 @@ class _add_contractState extends State<add_contract> {
                                                                 startDate.month +
                                                                     paidMonths,
                                                                 startDate.day);
-                                                        // print(endDate);
+
 
                                                         Future<QuerySnapshot>
                                                             renterContract =
@@ -505,7 +619,12 @@ class _add_contractState extends State<add_contract> {
                                                                     'start_date',
                                                                     isEqualTo:
                                                                         startDate)
+                                                                .where(
+                                                                'status',
+                                                                isEqualTo:
+                                                                'active')
                                                                 .get();
+
 
                                                         renterContract
                                                             .then((value) => {
@@ -651,7 +770,7 @@ class _add_contractState extends State<add_contract> {
                                                                     },
                                                                 });
 
-                                                        // then((value) => Navigator.of(
+                                                        // .then((value) => Navigator.of(
                                                         //             context)
                                                         //         .push(MaterialPageRoute(
                                                         //             builder: (context) =>

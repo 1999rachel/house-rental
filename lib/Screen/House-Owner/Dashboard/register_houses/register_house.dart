@@ -489,6 +489,7 @@ class _register_houseState extends State<register_house> {
 
                           setState(() {
                             isLoading = true;
+
                           });
                           await FirebaseFirestore.instance
                               .collection("houses_db").doc()
@@ -507,11 +508,22 @@ class _register_houseState extends State<register_house> {
                             // check if house number is available
                               })
                               .then((value) => {
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('House registered successfully',style: TextStyle(
+                                    color: Colors.white
+                                ),),
+                                backgroundColor: ButtonColor,
+                                duration: Duration(seconds: 3),
+                              ),
+                            ),
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 registered_houses())),
-                            // Fluttertoast.show
+
+
                                   })
                               .catchError((onError) =>
                                   {"something went wrong: $onError"});

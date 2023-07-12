@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:house_rental/Screen/Registration/LogIn/LogIn.dart';
-import 'package:house_rental/Utils/PreferenceUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../Utils/PreferenceUtil.dart';
 import '../../../Registration/Forgotpassword/change_password.dart';
 import '../dashboard.dart';
+import '../notification/notification_page.dart';
 import '../notifications.dart';
 
 class salon_owner_account extends StatefulWidget {
@@ -23,9 +23,9 @@ class _salon_owner_accountState extends State<salon_owner_account> {
   final ButtonColor = const Color(0xff0748A6);
   final BackgroundColor = const Color(0xffEEEEEE);
   final List<Widget> screen = [
-    dashboard(),
-    notifications(),
-    salon_owner_account()
+     dashboard(),
+    notification_page(),
+     salon_owner_account()
   ];
 
   int _page = 2;
@@ -42,10 +42,14 @@ class _salon_owner_accountState extends State<salon_owner_account> {
     prefs.setBool('isLoggedIn', false);
 
     // Navigate back to the login screen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LogIn()),
-    );
+    PreferenceUtil().removeItem("email");
+    Navigator.of(context).push(
+        MaterialPageRoute(
+            builder: (context) => const LogIn()));
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => LogIn()),
+    // );
   }
 
 
@@ -79,7 +83,10 @@ class _salon_owner_accountState extends State<salon_owner_account> {
             ),
           ),
           IconButton(
-              onPressed: () {}, icon: Icon(Icons.notifications, size: 30)),
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>notification_page()));
+
+              }, icon: Icon(Icons.notifications, size: 30)),
           IconButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
@@ -105,14 +112,14 @@ class _salon_owner_accountState extends State<salon_owner_account> {
         height: double.infinity,
         color: BackgroundColor,
         child: StreamBuilder<DocumentSnapshot>(
-          // stream: FirebaseFirestore.instance.collection("house_owner_db").doc(_auth.currentUser?.uid).snapshots(),
+           stream: FirebaseFirestore.instance.collection("house_owner_db").doc(_auth.currentUser?.uid).snapshots(),
 
-          stream: FirebaseFirestore.instance
-              .collection("house_owner_db")
-              .doc(_auth.currentUser?.uid)
-              .snapshots(),
+          // stream: FirebaseFirestore.instance
+          //     .collection("house_owner_db")
+          //     .doc(_auth.currentUser?.uid)
+          //     .snapshots(),
 
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             }
@@ -222,7 +229,7 @@ class _salon_owner_accountState extends State<salon_owner_account> {
                   child: Row(
                     children: [
                       Text(
-                        "phone 1",
+                        "Phone number",
                         style: TextStyle(
                             color: Colors.black, fontWeight: FontWeight.bold),
                       ),
@@ -236,28 +243,28 @@ class _salon_owner_accountState extends State<salon_owner_account> {
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 30,
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 20, right: 20),
-                  child: Row(
-                    children: [
-                      Text(
-                        "phone 2",
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 60,
-                      ),
-                      Text(
-                        data['secondary_phone_number'],
-                        style: TextStyle(color: Colors.black, fontSize: 16),
-                      )
-                    ],
-                  ),
-                ),
+                // SizedBox(
+                //   height: 30,
+                // ),
+                // Container(
+                //   padding: EdgeInsets.only(left: 20, right: 20),
+                //   child: Row(
+                //     children: [
+                //       Text(
+                //         "phone 2",
+                //         style: TextStyle(
+                //             color: Colors.black, fontWeight: FontWeight.bold),
+                //       ),
+                //       SizedBox(
+                //         width: 60,
+                //       ),
+                //       Text(
+                //         data['secondary_phone_number'],
+                //         style: TextStyle(color: Colors.black, fontSize: 16),
+                //       )
+                //     ],
+                //   ),
+                // ),
                 SizedBox(
                   height: 20,
                 ),
@@ -281,8 +288,8 @@ class _salon_owner_accountState extends State<salon_owner_account> {
                                 return Center(
                                     child: Container(
                                   margin: EdgeInsets.only(left: 20, right: 20),
-                                  width: double.infinity,
-                                  height: 100,
+                                  width: 260,
+                                  height: 130,
                                   decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.all(
@@ -296,7 +303,12 @@ class _salon_owner_accountState extends State<salon_owner_account> {
                                     },
                                     child: Container(
                                       height: 45,
-                                      width: double.infinity,
+                                      width:250,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        borderRadius: BorderRadius.all(Radius.circular(15))
+                                      ),
+
                                       margin:
                                           EdgeInsets.only(left: 10, right: 10),
                                       child: Center(

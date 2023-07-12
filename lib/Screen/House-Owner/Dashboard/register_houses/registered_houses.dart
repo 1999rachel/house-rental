@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:house_rental/Screen/House-Owner/Dashboard/dashboard.dart';
 import 'package:house_rental/Screen/House-Owner/Dashboard/register_houses/register_house.dart';
@@ -37,6 +38,53 @@ class _registered_housestate extends State<registered_houses> {
   //     });
   //
   // }
+
+  deleteSpecificHouse(String houseId){
+
+    print(houseId);
+
+    FirebaseFirestore.instance
+        .collection('houses_db')
+        .where(FieldPath.documentId, isEqualTo: houseId)
+        // .where('status', isEqualTo: 'inactive')
+        .get()
+        .then((querySnapshot) {
+      querySnapshot.docs.forEach((document) {
+        document.reference.delete();
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('House deleted successfully',style: TextStyle(
+              color: Colors.white
+          ),),
+          backgroundColor: Colors.black87,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    });
+
+    //     .then((value) {
+    //   print('House status updated successfully');
+    //
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text('House deleted successfully',style: TextStyle(
+    //           color: Colors.white
+    //       ),),
+    //       backgroundColor: ButtonColor,
+    //       duration: Duration(seconds: 3),
+    //     ),
+    //   );
+    //
+    // }
+    //
+    //
+    //
+    // )
+    //     .catchError((error) => print('Failed to update renter status: $error'));
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,464 +155,500 @@ class _registered_housestate extends State<registered_houses> {
                             QueryDocumentSnapshot data =
                                 ListQueryDocumentSnapshot[index];
 
-                            return Container(
-                              padding: EdgeInsets.only(
-                                left: 10,
-                              ),
-                              margin: EdgeInsets.only(left: 15, right: 15),
-                              height: 80,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10))),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                            return Slidable(
+                              key: ValueKey(
+                                  data),
+                              endActionPane: ActionPane(
+                                dismissible: DismissiblePane(
+                                  onDismissed: (){
+                                    setState(() {
+
+                                    });
+
+
+                                  },
+                                ),
+                                motion: DrawerMotion() ,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            '${index + 1}',
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                            ".",
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold),
-                                          )
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                "House name:",
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                              SizedBox(
-                                                width: 5,
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.end,
-                                                children: [
-                                                  Text(
-                                                    data['house_no'].toString(),
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        // color:
-                                                        // Color(0xffC21F1F),
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: 8,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                "Rent",
-                                                style: TextStyle(
+                                  SlidableAction(
+                                    label: "DELETE",
+                                    icon: Icons.delete,
+                                    backgroundColor: Colors.red,
+
+                                    onPressed: (BuildContext context) {
+
+                                      String houseId = data.id;
+                                      print(houseId);
+                                     setState(() {
+                                       deleteSpecificHouse(houseId);
+                                     });
+
+                                  },
+
+                                  )
+
+                                ],
+                              ),
+
+                              child: Container(
+                                padding: EdgeInsets.only(
+                                  left: 10,
+                                ),
+                                margin: EdgeInsets.only(left: 15, right: 15),
+                                height: 80,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              '${index + 1}',
+                                              style: TextStyle(
                                                   color: Colors.black,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                              ".",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold),
+                                            )
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Column(
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text(
+                                                  "House name:",
+                                                  style: TextStyle(
+                                                      color: Colors.black),
                                                 ),
-                                              ),
-                                              SizedBox(
-                                                width: 5,
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    data['rent'].toString(),
-                                                    style: TextStyle(
-                                                        color:
-                                                            Color(0xffC21F1F),
-                                                        fontWeight:
-                                                            FontWeight.bold),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                                  crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                                  children: [
+                                                    Text(
+                                                      data['house_no'].toString(),
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          // color:
+                                                          // Color(0xffC21F1F),
+                                                          fontWeight:
+                                                          FontWeight.bold),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text(
+                                                  "Rent",
+                                                  style: TextStyle(
+                                                    color: Colors.black,
                                                   ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  Text(
-                                                    "Tzs/mo",
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                  )
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      Expanded(child: Container()),
-                                      Row(
-                                        children: [
-                                          Align(
-                                          alignment: Alignment.bottomRight,
-                                          child: TextButton(
-                                              onPressed: () {
-                                                showModalBottomSheet<void>(
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                      BorderRadius.only(
-                                                          topLeft: Radius
-                                                              .circular(10),
-                                                          topRight: Radius
-                                                              .circular(
-                                                              10))),
-                                                  useSafeArea: true,
-                                                  isDismissible: true,
-                                                  elevation: 1,
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return Container(
-                                                      margin: EdgeInsets.only(
-                                                          left: 20, right: 20),
-                                                      child: Center(
-                                                        child:
-                                                        SingleChildScrollView(
-                                                          child: Column(
-                                                            children: [
-                                                              SizedBox(
-                                                                height: 0,
-                                                              ),
-                                                              Container(
-                                                                decoration: BoxDecoration(
-                                                                    color: ButtonColor,
-                                                                    borderRadius: BorderRadius.only(
-                                                                        bottomRight: Radius.circular(20),
-                                                                        bottomLeft: Radius.circular(20)
-                                                                    )
+                                                ),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      data['rent'].toString(),
+                                                      style: TextStyle(
+                                                          color:
+                                                          Color(0xffC21F1F),
+                                                          fontWeight:
+                                                          FontWeight.bold),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    Text(
+                                                      "Tzs/mo",
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        Expanded(child: Container()),
+                                        Row(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.bottomRight,
+                                              child: TextButton(
+                                                  onPressed: () {
+                                                    showModalBottomSheet<void>(
+                                                      shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                          BorderRadius.only(
+                                                              topLeft: Radius
+                                                                  .circular(10),
+                                                              topRight: Radius
+                                                                  .circular(
+                                                                  10))),
+                                                      useSafeArea: true,
+                                                      isDismissible: true,
+                                                      elevation: 1,
+                                                      context: context,
+                                                      builder:
+                                                          (BuildContext context) {
+                                                        return Container(
+                                                          margin: EdgeInsets.only(
+                                                              left: 20, right: 20),
+                                                          child: Center(
+                                                            child:
+                                                            SingleChildScrollView(
+                                                              child: Column(
+                                                                children: [
+                                                                  SizedBox(
+                                                                    height: 0,
+                                                                  ),
+                                                                  Container(
+                                                                    decoration: BoxDecoration(
+                                                                        color: ButtonColor,
+                                                                        borderRadius: BorderRadius.only(
+                                                                            bottomRight: Radius.circular(20),
+                                                                            bottomLeft: Radius.circular(20)
+                                                                        )
 
-                                                                ),
+                                                                    ),
 
-                                                                width: double.infinity,
-                                                                height: 50,
-                                                                child: Center(
-                                                                  child: Row(
+                                                                    width: double.infinity,
+                                                                    height: 50,
+                                                                    child: Center(
+                                                                      child: Row(
+                                                                        mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                        children: [
+                                                                          Text(
+                                                                            "House name:",
+                                                                            style: TextStyle(
+                                                                                color: Colors.white,
+                                                                                fontSize: 17,
+                                                                                fontWeight:
+                                                                                FontWeight.bold),
+                                                                          ),
+                                                                          SizedBox(
+                                                                            width: 5,
+                                                                          ),
+                                                                          Text(
+                                                                            data[
+                                                                            'house_no'],
+                                                                            style: TextStyle(
+                                                                                color: Colors.white,
+                                                                                fontWeight:
+                                                                                FontWeight.bold),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  ),
+
+                                                                  SizedBox(
+                                                                    height: 30,
+                                                                  ),
+                                                                  Row(
                                                                     mainAxisAlignment:
                                                                     MainAxisAlignment
-                                                                        .center,
+                                                                        .spaceBetween,
                                                                     children: [
                                                                       Text(
-                                                                        "House name:",
+                                                                        "Kitchen :",
                                                                         style: TextStyle(
-                                                                            color: Colors.white,
-                                                                            fontSize: 17,
+                                                                            color: Colors
+                                                                                .black,
                                                                             fontWeight:
                                                                             FontWeight.bold),
                                                                       ),
                                                                       SizedBox(
-                                                                        width: 5,
+                                                                        width: 80,
                                                                       ),
+                                                                      Expanded(
+                                                                        child:
+                                                                        Column(
+                                                                          crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                          children: [
+                                                                            Container(
+                                                                                alignment:
+                                                                                Alignment.topLeft,
+                                                                                child: Text(data['kitchen'])),
+                                                                            Divider(
+                                                                              color:
+                                                                              Colors.black54,
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                      )
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                    height: 25,
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                    children: [
                                                                       Text(
-                                                                        data[
-                                                                        'house_no'],
+                                                                        "Dining :",
                                                                         style: TextStyle(
-                                                                            color: Colors.white,
+                                                                            color: Colors
+                                                                                .black,
                                                                             fontWeight:
                                                                             FontWeight.bold),
                                                                       ),
+                                                                      SizedBox(
+                                                                        width: 90,
+                                                                      ),
+                                                                      Expanded(
+                                                                        child:
+                                                                        Column(
+                                                                          crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                          children: [
+                                                                            Container(
+                                                                                alignment:
+                                                                                Alignment.topLeft,
+                                                                                child: Text(data['dining'])),
+                                                                            Divider(
+                                                                              color:
+                                                                              Colors.black54,
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                      )
                                                                     ],
                                                                   ),
-                                                                ),
-                                                              ),
-
-                                                              SizedBox(
-                                                                height: 30,
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                                children: [
-                                                                  Text(
-                                                                    "Kitchen :",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontWeight:
-                                                                        FontWeight.bold),
+                                                                  SizedBox(
+                                                                    height: 25,
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                        "Seating room :",
+                                                                        style: TextStyle(
+                                                                            color: Colors
+                                                                                .black,
+                                                                            fontWeight:
+                                                                            FontWeight.bold),
+                                                                      ),
+                                                                      SizedBox(
+                                                                        width: 50,
+                                                                      ),
+                                                                      Expanded(
+                                                                        child:
+                                                                        Column(
+                                                                          crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                          children: [
+                                                                            Container(
+                                                                                alignment:
+                                                                                Alignment.topLeft,
+                                                                                child: Text(data['seating_room'])),
+                                                                            Divider(
+                                                                              color:
+                                                                              Colors.black54,
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                      )
+                                                                    ],
                                                                   ),
                                                                   SizedBox(
-                                                                    width: 80,
+                                                                    height: 25,
                                                                   ),
-                                                                  Expanded(
-                                                                    child:
-                                                                    Column(
-                                                                      crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                      children: [
-                                                                        Container(
-                                                                            alignment:
-                                                                            Alignment.topLeft,
-                                                                            child: Text(data['kitchen'])),
-                                                                        Divider(
-                                                                          color:
-                                                                          Colors.black54,
-                                                                        )
-                                                                      ],
-                                                                    ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                        "Available rooms :",
+                                                                        style: TextStyle(
+                                                                            color: Colors
+                                                                                .black,
+                                                                            fontWeight:
+                                                                            FontWeight.bold),
+                                                                      ),
+                                                                      SizedBox(
+                                                                        width: 30,
+                                                                      ),
+                                                                      Expanded(
+                                                                        child:
+                                                                        Column(
+                                                                          crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                          children: [
+                                                                            Container(
+                                                                                alignment:
+                                                                                Alignment.topLeft,
+                                                                                child: Text(data['rooms'])),
+                                                                            Divider(
+                                                                              color:
+                                                                              Colors.black54,
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                      )
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                    height: 25,
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                        "Master bed room :",
+                                                                        style: TextStyle(
+                                                                            color: Colors
+                                                                                .black,
+                                                                            fontWeight:
+                                                                            FontWeight.bold),
+                                                                      ),
+                                                                      SizedBox(
+                                                                        width: 25,
+                                                                      ),
+                                                                      Expanded(
+                                                                        child:
+                                                                        Column(
+                                                                          crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                          children: [
+                                                                            Container(
+                                                                                alignment:
+                                                                                Alignment.topLeft,
+                                                                                child: Text(data['master_bed_room'])),
+                                                                            Divider(
+                                                                              color:
+                                                                              Colors.black54,
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                      )
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                    height: 25,
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                        "Cost per month :",
+                                                                        style: TextStyle(
+                                                                            color: Colors
+                                                                                .black,
+                                                                            fontWeight:
+                                                                            FontWeight.bold),
+                                                                      ),
+                                                                      SizedBox(
+                                                                        width: 30,
+                                                                      ),
+                                                                      Expanded(
+                                                                        child:
+                                                                        Column(
+                                                                          crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                          children: [
+                                                                            Container(
+                                                                                alignment:
+                                                                                Alignment.topLeft,
+                                                                                child: Row(
+                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                  children: [
+                                                                                    Text(data['rent']),
+                                                                                    Text(
+                                                                                      "Tzs/ mo",
+                                                                                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                                                                                    )
+                                                                                  ],
+                                                                                )),
+                                                                            Divider(
+                                                                              color:
+                                                                              Colors.black54,
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                      )
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                    height: 30,
                                                                   )
                                                                 ],
                                                               ),
-                                                              SizedBox(
-                                                                height: 25,
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                                children: [
-                                                                  Text(
-                                                                    "Dining :",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontWeight:
-                                                                        FontWeight.bold),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width: 90,
-                                                                  ),
-                                                                  Expanded(
-                                                                    child:
-                                                                    Column(
-                                                                      crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                      children: [
-                                                                        Container(
-                                                                            alignment:
-                                                                            Alignment.topLeft,
-                                                                            child: Text(data['dining'])),
-                                                                        Divider(
-                                                                          color:
-                                                                          Colors.black54,
-                                                                        )
-                                                                      ],
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              SizedBox(
-                                                                height: 25,
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                                children: [
-                                                                  Text(
-                                                                    "Seating room :",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontWeight:
-                                                                        FontWeight.bold),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width: 50,
-                                                                  ),
-                                                                  Expanded(
-                                                                    child:
-                                                                    Column(
-                                                                      crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                      children: [
-                                                                        Container(
-                                                                            alignment:
-                                                                            Alignment.topLeft,
-                                                                            child: Text(data['seating_room'])),
-                                                                        Divider(
-                                                                          color:
-                                                                          Colors.black54,
-                                                                        )
-                                                                      ],
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              SizedBox(
-                                                                height: 25,
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                                children: [
-                                                                  Text(
-                                                                    "Available rooms :",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontWeight:
-                                                                        FontWeight.bold),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width: 30,
-                                                                  ),
-                                                                  Expanded(
-                                                                    child:
-                                                                    Column(
-                                                                      crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                      children: [
-                                                                        Container(
-                                                                            alignment:
-                                                                            Alignment.topLeft,
-                                                                            child: Text(data['rooms'])),
-                                                                        Divider(
-                                                                          color:
-                                                                          Colors.black54,
-                                                                        )
-                                                                      ],
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              SizedBox(
-                                                                height: 25,
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                                children: [
-                                                                  Text(
-                                                                    "Master bed room :",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontWeight:
-                                                                        FontWeight.bold),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width: 25,
-                                                                  ),
-                                                                  Expanded(
-                                                                    child:
-                                                                    Column(
-                                                                      crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                      children: [
-                                                                        Container(
-                                                                            alignment:
-                                                                            Alignment.topLeft,
-                                                                            child: Text(data['master_bed_room'])),
-                                                                        Divider(
-                                                                          color:
-                                                                          Colors.black54,
-                                                                        )
-                                                                      ],
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              SizedBox(
-                                                                height: 25,
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                                children: [
-                                                                  Text(
-                                                                    "Cost per month :",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontWeight:
-                                                                        FontWeight.bold),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width: 30,
-                                                                  ),
-                                                                  Expanded(
-                                                                    child:
-                                                                    Column(
-                                                                      crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                      children: [
-                                                                        Container(
-                                                                            alignment:
-                                                                            Alignment.topLeft,
-                                                                            child: Row(
-                                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                              children: [
-                                                                                Text(data['rent']),
-                                                                                Text(
-                                                                                  "Tzs/ mo",
-                                                                                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                                                                                )
-                                                                              ],
-                                                                            )),
-                                                                        Divider(
-                                                                          color:
-                                                                          Colors.black54,
-                                                                        )
-                                                                      ],
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              SizedBox(
-                                                                height: 30,
-                                                              )
-                                                            ],
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ),
+                                                        );
+                                                      },
                                                     );
+
+                                                    ;
                                                   },
-                                                );
+                                                  child: Icon(
+                                                    Icons.arrow_drop_down_rounded,
+                                                    size: 30,
+                                                    color: Colors.black,
+                                                  )),
+                                            ),
 
-                                                ;
-                                              },
-                                              child: Icon(
-                                                Icons.arrow_drop_down_rounded,
-                                                size: 30,
-                                                color: Colors.black,
-                                              )),
+                                          ],
                                         ),
-
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           },

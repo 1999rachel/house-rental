@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../House-Owner/Dashboard/account/account.dart';
 import '../LogIn/LogIn.dart';
 
 class change_password extends StatefulWidget {
@@ -20,7 +21,7 @@ class _change_passwordState extends State<change_password> {
         leading: IconButton(
             onPressed: () {
 
-              Navigator.of(context).pop();
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>salon_owner_account()));
             },
             icon: Icon(
               Icons.arrow_back_ios,
@@ -72,7 +73,7 @@ class _change_passwordState extends State<change_password> {
                       "New password",
                       style: TextStyle(color: Colors.black, fontSize: 15),
                     ),
-                    hintText: "Enter your new password",
+                    hintText: "Enter new password",
                     fillColor: Colors.white,
                     hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
                     prefixIcon: Icon(
@@ -114,7 +115,7 @@ class _change_passwordState extends State<change_password> {
                       "New password",
                       style: TextStyle(color: Colors.black, fontSize: 15),
                     ),
-                    hintText: "Enter your new password",
+                    hintText: "Enter  new password",
                     fillColor: Colors.white,
                     hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
                     prefixIcon: Icon(
@@ -157,7 +158,7 @@ class _change_passwordState extends State<change_password> {
                       "Confrim password",
                       style: TextStyle(color: Colors.black, fontSize: 15),
                     ),
-                    hintText: "Confirm your password",
+                    hintText: "Confirm password",
                     fillColor: Colors.white,
                     hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
                     prefixIcon: Icon(

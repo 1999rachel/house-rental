@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:house_rental/Screen/House-Owner/Dashboard/Renter_details/add_contract_to_renter.dart';
 import 'package:intl/intl.dart';
 import 'package:signature/signature.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -140,6 +141,11 @@ class _contract_viewState extends State<contract_view> {
         elevation: 0,
         backgroundColor: ButtonColor,
         centerTitle: true,
+        // leading: Container(),
+         leading: IconButton(onPressed: (){
+           Navigator.of(context).push(MaterialPageRoute(builder: (context)=>dashboard()));
+
+         }, icon: Icon(Icons.arrow_back_ios_new,size: 24,color: Colors.white,)),
         title: Text(
           "Contract",
           style: TextStyle(color: Colors.white, fontSize: 17),
@@ -154,7 +160,7 @@ class _contract_viewState extends State<contract_view> {
                     alignment: Alignment.topRight,
                     child: Container(
                       margin: EdgeInsets.only(top: 30),
-                      height: 150,
+                      height: 180,
                       width: 300,
                       // width: 150,
 
@@ -186,7 +192,47 @@ class _contract_viewState extends State<contract_view> {
                                               ),
                                               Text("back to dashboard",style: TextStyle(color: Colors.black),)
                                             ],
-                                          ))))
+                                          )))),
+
+
+                              TextButton(
+                                  onPressed: () {
+
+                                    FirebaseFirestore.instance.collection("contracts_db").where('renter_id',isEqualTo: widget.renter_id).where('start_date',isEqualTo:widget.start_date).get().then((QuerySnapshot contractdate) {
+                                      contractdate.docs.forEach((DocumentSnapshot document) {
+                                        document.reference.delete().then((value) =>  Navigator.of(context).push(MaterialPageRoute(builder: (context)=>add_contract(renter_id: widget.renter_id))));
+
+
+                                      });
+
+
+                                    }) .catchError((error) {
+                                      print("Error occured while deleting documents: $error");
+                                    });
+
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(left: 10,right: 10),
+                                      height: 45,
+                                      decoration:BoxDecoration(
+                                        // color: ButtonColor,
+                                        borderRadius: BorderRadius.all(Radius.circular(10))
+
+                                      ) ,
+                                      child: Align(
+                                          alignment: Alignment.center,
+                                          child: Row(
+                                            children: [
+
+                                              Icon(Icons.delete,size: 24,color: Colors.black54,),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text("delete contract",style: TextStyle(color: Colors.black),)
+                                            ],
+                                          )))),
+
+
                             ],
                           ),
                         ),
@@ -238,7 +284,7 @@ class _contract_viewState extends State<contract_view> {
                     stream: FirebaseFirestore.instance
                         .collection("contracts_db")
                         .where('renter_id', isEqualTo: widget.renter_id)
-                        .where('start_date', isEqualTo: widget.start_date)
+                        .where('start_date', isEqualTo: widget.start_date).where('status', isEqualTo:'active')
                         .snapshots(),
                     builder: (context, AsyncSnapshot snapshot) {
                       if (snapshot.hasError) {
@@ -1046,6 +1092,8 @@ class _contract_viewState extends State<contract_view> {
       ),
     );
   }
+
+
   Future uploadRenterSignature() async {
     final storageRef = FirebaseStorage.instance.ref().child('renter_signatures');
     final uploadTask = storageRef
@@ -1060,7 +1108,7 @@ class _contract_viewState extends State<contract_view> {
     final querysnapshot = await FirebaseFirestore.instance
         .collection("contracts_db")
         .where('renter_id', isEqualTo: widget.renter_id)
-        .where('start_date', isEqualTo: widget.start_date).where('status',isEqualTo:'active')
+        .where('start_date', isEqualTo: widget.start_date)
         .get();
 
     if(querysnapshot.docs.isNotEmpty){
@@ -1090,12 +1138,13 @@ class _contract_viewState extends State<contract_view> {
 
 
   Future Add_house_owner_signature_to_firebase() async {
-    final storageRef = FirebaseStorage.instance.ref().child('house_owner_signatures');
+    final storageRef = FirebaseStorage.instance.ref().child('house_owner_signature');
     final uploadTask = storageRef
-        .child('house_owner_signature.png')
+        .child('house_owner_signature.jpeg')
         .putData(
-        houseOwnerSignature);
-    final downloadURL = await (await uploadTask).ref.getDownloadURL();
+        houseOwnerSignature
+    );
+    final houseOwnerDownload = await (await uploadTask).ref.getDownloadURL();
     // Save the download URL to Firestore
     // final firestoreInstance = FirebaseFirestore.instance;
 
@@ -1111,8 +1160,12 @@ class _contract_viewState extends State<contract_view> {
       await FirebaseFirestore.instance
           .collection('contracts_db')
           .doc(documentId)
-          .update({'house_owner_signature': downloadURL});
+          .update({'house_owner_Signature': houseOwnerDownload});
 
+    }
+    if(querysnapshot.docs.isEmpty){
+
+      print("Fetched document is invalid/ not found");
     }
 
     //    try {
@@ -1125,4 +1178,41 @@ class _contract_viewState extends State<contract_view> {
     //      Text('error ${;}');
     //   }
   }
+
+  // Future Add_house_owner_signature_to_firebase() async {
+  //   final storageRef = FirebaseStorage.instance.ref().child('house_owner_signatures');
+  //   final uploadTask = storageRef
+  //       .child('house_owner_signature.png')
+  //       .putData(
+  //       houseOwnerSignature);
+  //   final downloadURL = await (await uploadTask).ref.getDownloadURL();
+  //   // Save the download URL to Firestore
+  //   // final firestoreInstance = FirebaseFirestore.instance;
+  //
+  //   final querysnapshot = await FirebaseFirestore.instance
+  //       .collection("contracts_db")
+  //       .where('renter_id', isEqualTo: widget.renter_id)
+  //       .where('start_date', isEqualTo: widget.start_date).where('status',isEqualTo:'active')
+  //       .get();
+  //
+  //   if(querysnapshot.docs.isNotEmpty){
+  //     final documentSnapshot = querysnapshot.docs.first;
+  //     final documentId = documentSnapshot.id;
+  //     await FirebaseFirestore.instance
+  //         .collection('contracts_db')
+  //         .doc(documentId)
+  //         .update({'house_owner_signature': downloadURL});
+  //
+  //   }
+  //
+  //   //    try {
+  //   //
+  //   //      // await firestoreInstance.collection('contracts_db').where('renter_id', isEqualTo: widget.renter_id).where('start_date',isEqualTo:widget.start_date).get().
+  //   //    }
+  //   //
+  //   // catch((error)){
+  //   //
+  //   //      Text('error ${;}');
+  //   //   }
+  // }
 }

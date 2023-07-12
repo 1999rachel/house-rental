@@ -15,8 +15,11 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  final ListOfGender = ['Female', 'Male'];
-  String _selectGender = 'Female';
+  final ListOfGender = ['Gender','Female', 'Male'];
+  String _selectGender = 'Gender';
+
+
+
   TextEditingController email_controller = TextEditingController();
   TextEditingController password_controller = TextEditingController();
   TextEditingController primary_phone_number = TextEditingController();
@@ -29,6 +32,8 @@ class _SignUpState extends State<SignUp> {
 
 
   bool isLoading = false;
+
+
 
   @override
   void dispose() {
@@ -297,11 +302,11 @@ class _SignUpState extends State<SignUp> {
                                           borderSide: BorderSide(
                                               color: Color(0xff0748A6))),
                                       label: Text(
-                                        "phone 1",
+                                        "Phone Number",
                                         style: TextStyle(
                                             color: Colors.black, fontSize: 15),
                                       ),
-                                      hintText: "Enter your phone number",
+                                      hintText: "Enter phone number",
                                       fillColor: Colors.white,
                                       hintStyle: TextStyle(
                                           color: Colors.black38, fontSize: 15),
@@ -408,7 +413,7 @@ class _SignUpState extends State<SignUp> {
                                         style: TextStyle(
                                             color: Colors.black, fontSize: 15),
                                       ),
-                                      hintText: "Enter your password",
+                                      hintText: "Enter password",
                                       fillColor: Colors.white,
                                       hintStyle: TextStyle(
                                           color: Colors.black38, fontSize: 15),
@@ -433,6 +438,7 @@ class _SignUpState extends State<SignUp> {
                                         password_controller.text) {
                                       return 'Enter correct email';
                                     }
+                                    return null;
                                   },
                                   obscureText: true,
                                   controller: confirm_controller,
@@ -476,17 +482,19 @@ class _SignUpState extends State<SignUp> {
                               SizedBox(
                                 height: 30,
                               ),
-                              Container(
+                           Container(
                                 width: double.infinity,
                                 // height: 45,
                                 decoration: BoxDecoration(
                                     color: Color(0xff0748A6),
                                     borderRadius: BorderRadius.circular(10)),
-                                child: TextButton(
+                                child:  TextButton(
                                     onPressed: () async {
 
                                       if (_formKey.currentState!.validate()) {
-
+                                        setState(() {
+                                          isLoading = true;
+                                        });
 
                                         FirebaseAuth.instance
                                             .createUserWithEmailAndPassword(

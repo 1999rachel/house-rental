@@ -68,6 +68,16 @@ class _renter_registration_stage2State
         // String renterId = 'REPLACE_WITH_RENTER_ID'; // Replace with actual renter ID
         updateRenterHouse( selectedHouseId);
 
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Renter registered successfully',style: TextStyle(
+                color: Colors.white
+            ),),
+            backgroundColor: ButtonColor,
+            duration: Duration(seconds: 3),
+          ),
+        );
+
         Navigator.of(context).push(
                 MaterialPageRoute(
                     builder: (context) =>
@@ -77,6 +87,8 @@ class _renter_registration_stage2State
         // House is already occupied
 
         setState(() {
+
+
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -282,11 +294,6 @@ class _renter_registration_stage2State
                                       try {
                                         final selectedHouseId = data.id;
                                         onButtonPressed(selectedHouseId);
-
-
-
-
-
 
 
                                         // setState(() async {

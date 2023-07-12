@@ -4,9 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:house_rental/Screen/House-Owner/Dashboard/dashboard.dart';
-import 'package:house_rental/Utils/PreferenceUtil.dart';
 
-import '../../services/auth_services.dart';
+import '../../../Utils/PreferenceUtil.dart';
 import '../Forgotpassword/phone_number_verification.dart';
 import '../SignUp/SignUp.dart';
 
@@ -22,6 +21,8 @@ class _LogInState extends State<LogIn> {
 
 
   bool isLoading = false;
+  bool showContainer = false;
+  bool showLogin = false;
 
   final ButtonColor = const Color(0xff0748A6);
   final BackgroundColor = const Color(0xffEEEEEE);
@@ -32,6 +33,39 @@ class _LogInState extends State<LogIn> {
   TextEditingController emailcontroller = TextEditingController();
   TextEditingController passwordcontroller = TextEditingController();
 
+  @override
+  void initState() {
+
+
+
+    PreferenceUtil prefs = PreferenceUtil();
+    prefs.getItem("email", "string").then((renter){
+      if(renter!=null){
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>dashboard()));
+      } else {
+        setState(() {
+          showLogin = true;
+
+        });
+      }
+
+
+    });
+
+
+
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        LogIn();
+      }
+    });
+
+    super.initState();
+  }
+
+
 
   @override
   void dispose() {
@@ -40,22 +74,24 @@ class _LogInState extends State<LogIn> {
     passwordcontroller.dispose();
   }
 
-  @override
-  void initState() {
-
-      FirebaseAuth.instance
-          .authStateChanges()
-          .listen((User? user) {
-        if (user == null) {
-          print('User is currently signed out!');
-        } else {
-          LogIn();
-        }
-      });
-
-
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //
+  //     FirebaseAuth.instance
+  //         .authStateChanges()
+  //         .listen((User? user) {
+  //       if (user == null) {
+  //         print('User is currently signed out!');
+  //       } else {
+  //         LogIn();
+  //       }
+  //     });
+  //
+  //
+  //
+  //
+  //   super.initState();
+  // }
   showSnackBar(String text, Duration d) {
     final snackBar = SnackBar(
       content: Text(text),
@@ -121,7 +157,7 @@ class _LogInState extends State<LogIn> {
   //       }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return showLogin ? Scaffold(
         body: SafeArea(
             child: Container(
       width: double.infinity,
@@ -246,7 +282,8 @@ class _LogInState extends State<LogIn> {
                               prefixIcon: Icon(
                                 Icons.lock,
                                 color: Colors.black54,
-                              )),
+                              )
+                          ),
                         ),
                       ),
                       SizedBox(
@@ -273,7 +310,7 @@ class _LogInState extends State<LogIn> {
                         ),
                       ),
 
-                      Container(
+                    Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
                             color: Color(0xff0748A6),
@@ -291,6 +328,11 @@ class _LogInState extends State<LogIn> {
                                 try{
                                   await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailcontroller.text, password: passwordcontroller.text).then((value) {
 
+                                    PreferenceUtil prefs = PreferenceUtil();
+                                    prefs.setItem("email", emailcontroller.text, "string");
+
+
+
                                     Navigator.of(context).push(
 
                                         MaterialPageRoute(
@@ -300,103 +342,77 @@ class _LogInState extends State<LogIn> {
                                   });
 
                                 }
-                                catch ( user_credential){
-                                  if (user_credential is FirebaseException && (user_credential.code == 'invalid- email'||
-                                        user_credential.code == 'user-not-found'||
-                                    user_credential.code== ' wrong-password')) {
-                                    showDialog(context: context, builder: (context){
-                                      return Center(
-                                        child: Container(
-                                          height: 150,
-                                          width: double.infinity,
-                                          color: Colors.white,
-                                          child: Column(
-                                            children: [
-                                              Text("ajsdcadchkhad")
-                                            ],
-                                          ),
-                                        ),
+                                catch (user_credential) {
+                                  if (user_credential is FirebaseException &&
+                                      (user_credential.code == 'invalid-email' ||
+                                          user_credential.code == 'user-not-found' ||
+                                          user_credential.code == 'wrong-password')) {
+                                    setState(() {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return Dialog(
+                                            child: Container(
+                                              height: 130,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.all(Radius.circular(15))
+
+                                              ),
+                                              width: double.infinity,
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(
+                                                    height: 30,
+                                                  ),
+                                                  Center(
+                                                    child: Text(
+                                                      "Invalid email or password",
+                                                      textAlign: TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 20,
+                                                  ),
+                                                  Container(
+                                                    height: 45,
+                                                    width: 80,
+                                                    decoration: BoxDecoration(
+                                                      color: ButtonColor,
+                                                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                                                    ),
+                                                    child: Center(
+                                                      child: TextButton(
+                                                        onPressed: () {
+
+                                                          Navigator.of(context).pop();
+                                                        },
+                                                        child: Text(
+                                                          'OK',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
                                       );
 
+                                      isLoading = false;
                                     });
-
                                   }
-                                  // else{
-                                  //   setState(() {
-                                  //
-                                  //      isLoading = false;
-                                  //
-                                  //   });
-                                  //   showDialog(context: context, builder: (context){
-                                  //     return
-                                  //      Center
-                                  //        (
-                                  //        child: Dialog(
-                                  //           child: Container(
-                                  //             padding: EdgeInsets.only(top: 25),
-                                  //             height:150,
-                                  //
-                                  //               width:double.infinity,
-                                  //             decoration: BoxDecoration(
-                                  //               borderRadius: BorderRadius.all(Radius.circular(20)),
-                                  //               color: Colors.white,
-                                  //
-                                  //             ),
-                                  //             child: Column(
-                                  //               crossAxisAlignment: CrossAxisAlignment.center,
-                                  //               children: [
-                                  //                 SizedBox(
-                                  //                   height: 10,
-                                  //                 ),
-                                  //
-                                  //                 Container(
-                                  //                   child: Center(
-                                  //                     child: Text("Invalid Email or Password!",),
-                                  //                   ),
-                                  //                 ),
-                                  //                 SizedBox(
-                                  //                   height: 20,
-                                  //                 ),
-                                  //                 Container(
-                                  //                     height:45,
-                                  //                     width: 100,
-                                  //                     decoration: BoxDecoration(
-                                  //                         color: ButtonColor,
-                                  //                         borderRadius: BorderRadius.all(Radius.circular(10))
-                                  //
-                                  //                     ),
-                                  //                     child: Center(child: TextButton(
-                                  //                       onPressed: (){
-                                  //                         setState(() {
-                                  //                           isLoading = false;
-                                  //                         });
-                                  //                         Navigator.of(context).pop();
-                                  //                       },
-                                  //                       child: Text('OK',style: TextStyle(
-                                  //                         color: Colors.white,
-                                  //                       ),),
-                                  //                     ))),
-                                  //                 SizedBox(
-                                  //                   height: 10,
-                                  //                 )
-                                  //               ],
-                                  //             ),
-                                  //           )
-                                  //
-                                  //
-                                  //
-                                  //
-                                  //     ),
-                                  //      );
-                                  //
-                                  //   });
-                                  //
-                                  //
-                                  //
-                                  // }
+                                }
 
-                            }
-    // catch (user_credentials) {
+                                // catch (user_credentials) {
     // if (user_credentials is FirebaseException){
     // if (user_credentials.code== 'invalid-email' ||
     // user_credentials.code == 'user-not-found' ||
@@ -471,9 +487,12 @@ class _LogInState extends State<LogIn> {
                             ))),
                       ),
 
+
                       SizedBox(
                         height: 30,
                       ),
+
+
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: Row(
@@ -507,7 +526,7 @@ class _LogInState extends State<LogIn> {
                       SizedBox(
                         height: 50,
                       ),
-                      isLoading ? Center(child: SpinKitCircle(color: ButtonColor)) : Container(),
+                       isLoading ? Center(child: SpinKitCircle(color: ButtonColor)) : Container(),
                       SizedBox(
                         height: 150,
                       ),
@@ -521,7 +540,29 @@ class _LogInState extends State<LogIn> {
               ))
             ],
           )),
-    )));
+    ))):Container(
+      color:Colors.grey,
+      child: Column(
+        children: [
+
+          Expanded(child: Container(
+            color: ButtonColor,
+          )),
+
+          Container(
+
+            child: Image.asset(
+              "assets/logo.png",
+              fit: BoxFit.cover,
+            ),
+          )
+          // SizedBox(
+          //   height: 20,
+          // ),
+
+        ],
+      ),
+    );
   }
 
 
